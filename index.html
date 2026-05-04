@@ -1,1 +1,759 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ネプトジャパン協同組合 運賃料金・医療機関向け資料 PDF印刷用</title>
+<style>
+body{
+  margin:0;
+  background:#f0f7f3;
+  font-family:"Yu Gothic","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  color:#222;
+  line-height:1.9;
+  font-size:17px;
+}
+.wrap{
+  max-width:920px;
+  margin:0 auto;
+  background:#fff;
+  padding:24px 18px 44px;
+  box-sizing:border-box;
+}
+h1{
+  font-size:26px;
+  line-height:1.45;
+  border-bottom:4px solid #2e8b57;
+  padding-bottom:10px;
+  margin:0 0 16px;
+}
+h2{
+  font-size:22px;
+  color:#2e8b57;
+  border-left:8px solid #2e8b57;
+  padding-left:10px;
+  margin-top:34px;
+}
+h3{font-size:19px;margin:20px 0 8px;}
+p{margin:0 0 14px;}
+ul{margin:0 0 14px 1.2em;padding:0;}
+li{margin-bottom:6px;}
+.notice{background:#e6f4ea;border-left:6px solid #2e8b57;padding:12px 14px;font-weight:bold;margin:16px 0;}
+.summary{background:#edf8f1;border:1px solid #c8e6d2;border-radius:10px;padding:14px;margin:18px 0;}
+.box{background:#f4f9f6;border-left:6px solid #6bbf8f;padding:14px;margin:16px 0;}
+.green{background:#e8f6ef;border-left:6px solid #2e8b57;padding:14px;margin:16px 0;}
+.red{color:#d9534f;font-weight:bold;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th,td{border:1px solid #cfe6d8;padding:10px;vertical-align:top;text-align:left;}
+th{background:#edf8f1;width:30%;}
+.form{background:#fff;border:2px solid #cfe6d8;border-radius:10px;padding:16px;margin:16px 0;}
+.formline{margin:6px 0;}
+.cta{background:#2e8b57;color:#fff;padding:20px;text-align:center;border-radius:10px;margin-top:28px;}
+.tel{font-size:24px;font-weight:bold;margin:8px 0;}
+.small{font-size:13px;}
+hr{margin:36px 0;border:none;border-top:1px solid #cfe6d8;}
+.badge{display:inline-block;background:#2e8b57;color:#fff;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:bold;}
 
+
+/* ===== PDF印刷用設定：完全版・余白調整・フォーム縮小 ===== */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 16mm 14mm 16mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+
+  .wrap {
+    max-width: none;
+    width: auto;
+    padding: 0;
+    background: #ffffff;
+  }
+
+  h1 {
+    font-size: 21px;
+    line-height: 1.35;
+    page-break-after: avoid;
+  }
+
+  h2 {
+    font-size: 17px;
+    margin-top: 16px;
+    page-break-before: always;
+    page-break-after: avoid;
+  }
+
+  h2:first-of-type {
+    page-break-before: auto;
+  }
+
+  h3 {
+    font-size: 15px;
+    margin-top: 12px;
+    margin-bottom: 5px;
+    page-break-after: avoid;
+  }
+
+  p, li {
+    margin-bottom: 4px;
+  }
+
+  ul {
+    margin-top: 4px;
+    margin-bottom: 6px;
+  }
+
+  table {
+    font-size: 12.5px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  th, td {
+    padding: 6px;
+  }
+
+  .notice,
+  .summary,
+  .box,
+  .green,
+  .cta {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    padding: 8px;
+    margin: 8px 0;
+  }
+
+  .form {
+    font-size: 11.5px;
+    line-height: 1.35;
+    padding: 8px;
+    margin: 8px 0;
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+
+  .formline {
+    margin: 1.5px 0;
+  }
+
+  .tel {
+    font-size: 18px;
+  }
+
+  .small {
+    font-size: 11px;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+
+/* ===== 別表：指示書2ページ用 ===== */
+.sheet{
+  background:#fff;
+  border:1px solid #cfe6d8;
+  border-radius:10px;
+  padding:22px;
+  margin:22px 0;
+  box-sizing:border-box;
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px 18px;
+}
+.sign{
+  margin-top:18px;
+  border-top:1px solid #cfe6d8;
+  padding-top:10px;
+}
+@media print{
+  .sheet{
+    border:none;
+    border-radius:0;
+    padding:0;
+    margin:0;
+    page-break-after:always;
+    break-after:page;
+  }
+  .sheet:last-of-type{
+    page-break-after:auto;
+    break-after:auto;
+  }
+  .grid{
+    gap:4px 12px;
+  }
+  .sign{
+    margin-top:10px;
+    padding-top:8px;
+  }
+}
+
+
+/* ===== 指示書ページ分割修正 ===== */
+@media print {
+  /* 指示書内の小見出しでページ分割しない */
+  .sheet h2 {
+    page-break-before: auto !important;
+    break-before: auto !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    margin-top: 8px !important;
+    margin-bottom: 4px !important;
+    font-size: 14.5px !important;
+  }
+
+  .sheet h1 {
+    font-size: 18px !important;
+    margin-bottom: 5px !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .sheet {
+    page-break-before: always !important;
+    break-before: page !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    font-size: 12.2px !important;
+    line-height: 1.28 !important;
+  }
+
+  .sheet:last-of-type {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  .sheet .box,
+  .sheet .notice,
+  .sheet .form,
+  .sheet .summary,
+  .sheet table {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    padding: 5px !important;
+    margin: 4px 0 !important;
+  }
+
+  .sheet .formline {
+    margin: 1px 0 !important;
+  }
+
+  .sheet .grid {
+    gap: 2px 8px !important;
+  }
+
+  .sheet .sign {
+    margin-top: 6px !important;
+    padding-top: 4px !important;
+  }
+
+  .sheet .small {
+    font-size: 10.5px !important;
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div style="text-align:right;color:#555;font-size:14px;margin-bottom:10px;">PDF印刷用・設定日：令和8年5月1日（完全版）</div>
+
+<h1>ネプトジャパン協同組合<br>運賃料金・医療機関向け資料・依頼フォーム</h1>
+
+<div class="notice">
+ネプトジャパン協同組合の標準料金としてご案内しています。<br>
+運賃は東北運輸局の認可運賃に基づくものです。
+</div>
+
+<p>この資料では、介護タクシー・民間救急の運賃料金、医療機関・施設の方向けの確認事項、ショートメール用フォーム、伝言フォーム、医療行為等に関する指示書テンプレートをまとめています。</p>
+
+
+<div style="text-align:center; margin:24px 0;">
+  <a href="https://drive.google.com/file/d/1Y7XMNnWtLxwDDBOzkFzvOx_I7DMug0u-/view?usp=sharing" target="_blank"
+     style="
+       display:inline-block;
+       background:#2e8b57;
+       color:#ffffff;
+       padding:14px 28px;
+       font-size:18px;
+       border-radius:10px;
+       text-decoration:none;
+       font-weight:bold;
+       box-shadow:0 3px 8px rgba(0,0,0,0.15);
+     ">
+     📄 利用料金表（PDF）はこちら
+  </a>
+</div>
+
+<p class="red">必ず事前に総額概算をご確認ください。</p>
+
+<h2>Ⅰ　一般用：運賃料金</h2>
+
+<div class="summary">
+<h3>一目でわかるご利用概要</h3>
+<table>
+<tr><th>項目</th><th>内容</th></tr>
+<tr><td><strong>対象（介護タクシー）</strong></td><td><strong>障害や要介護・要支援状態により移動が困難な方</strong><br>（用途は問いません）</td></tr>
+<tr><td><strong>対象（認定患者搬送事業）</strong></td><td><strong>病気やケガのある方（患者）で、通院・退院・転院などの移動が必要な方</strong><br><br>（認定患者搬送事業者とは、<strong>運輸局の介護タクシー許可に加え、消防の救急手当に関する研修を受け認可された事業者</strong>です）</td></tr>
+<tr><td><strong>運賃の決まり方</strong></td><td>時間制運賃とメーター制運賃を比較し、<strong>高い方を適用</strong></td></tr>
+<tr><td><strong>待機時間</strong></td><td>病院・施設での待機時間も運賃に含まれます</td></tr>
+<tr><td><strong>介助料金</strong></td><td><strong>必要な介助内容やスタッフ数により別途加算されます</strong></td></tr>
+<tr><td><strong>カード支払い</strong></td><td><strong>カード支払いをご希望の場合は、事前にご連絡が必要です。</strong></td></tr>
+</table>
+</div>
+
+<h3>運賃体系</h3>
+<p>運賃は、時間制（貸切）とメーター制（時間距離併用）の2種類があり、実際の計算では<strong>高い方を適用</strong>します。</p>
+
+<div class="box">
+<strong>■ 時間制運賃</strong><br><br>
+大型車：10分ごと 1,590円<br>
+普通車：10分ごと 1,060円<br><br>
+※営業所出発から業務終了まで
+</div>
+
+<div class="box">
+<strong>■ メーター制運賃</strong><br><br>
+初乗り1.4kmまで 810円<br>
+以降220mごと 110円
+</div>
+
+<p>また、運賃には病院・施設等での待機時間も含まれます。</p>
+
+<div class="green"><strong>待機時間の影響</strong><br>退院準備・精算・受入準備の遅れにより、料金が増加する場合があります。</div>
+
+<h3>割引・割増</h3>
+<ul>
+<li>障がい者割引：1割引</li>
+<li>深夜早朝：2割増</li>
+<li>寝台利用時：2割増</li>
+</ul>
+
+<h3>スタッフ・介助料金</h3>
+<ul>
+<li>ドライバー介助：1,500円（30分）／以降10分ごと500円</li>
+<li>専任介助員：同上</li>
+<li>看護師：3,000円（30分）／以降10分ごと1,000円</li>
+<li><strong>必要な人員数：現場などの状況により、スタッフを増やす必要があります。詳しくお聞きします。</strong></li>
+</ul>
+
+<p>患者様の居る場所、患者体重、階段の有無、必要な人員数、搬送方法によって料金は変動します。</p>
+
+<p class="red">介護タクシーや患者搬送車は、1台の車両で順番に複数のご利用者様を搬送することがあります。前の搬送先での遅れが、次のご利用者様に影響することがあるため、円滑な運行にご協力をお願いいたします。</p>
+
+<div class="box red">
+<strong>【車いす・ストレッチャー選択時の注意】</strong><br>
+患者様の状態により車いすかストレッチャーを選ぶ場合は、移動時間も考慮してください。<br>
+また、ストレッチャー以外では搬送中に行える医療的対応には限界があります。
+</div>
+
+<h3>その他詳細について</h3>
+<div class="box">
+<strong>■ 迎車料金</strong><br><br>
+営業所から1.5km以上の地点へお迎えする場合に適用します。<br>
+3kmまで：大型車 1,000円 ／ 普通車 700円<br>
+5kmまで：大型車 2,000円 ／ 普通車 1,300円<br>
+10kmまで：大型車 3,000円 ／ 普通車 2,000円<br><br>
+以降5kmごとに加算し、上限料金があります。
+</div>
+
+<div class="box">
+<strong>■ 医療器材</strong><br><br>
+酸素：3,000円（300Lまで）／以降1Lごと10円<br>
+吸引・BVM：実費（10,000円〜）<br>
+AED：パッド実費（電源無料）
+</div>
+
+<div class="box red"><strong>感染症対応、精神科対応、車内汚染等については、状況に応じて別途費用や事前調整が必要となります。</strong></div>
+
+<h2>Ⅱ　医療機関・施設の方用説明</h2>
+
+<div class="summary"><strong>退院搬送・転院搬送等のご依頼にあたっては、下記の内容をご確認ください。</strong></div>
+
+<p>医療機関・施設からのご依頼では、患者様の状態や搬送条件の把握が重要です。事前確認の精度により、配車可否判断と概算料金のご案内が円滑になります。</p>
+
+<h3>ご依頼時の確認事項</h3>
+<ul>
+<li>患者様の状態（<strong>患者体重・歩行・単独移乗可否・車いす・ストレッチャー</strong>）</li>
+<li>医療対応の有無（酸素・吸引など）</li>
+<li>階段・段差の有無</li>
+<li>付添の有無</li>
+<li>患者様の居る場所</li>
+<li><strong>必要な人員数（現場などの状況により、スタッフを増やす必要があります。詳しくお聞きします。）</strong></li>
+<li>退院準備・精算の見込み</li>
+<li>カード支払い希望の有無（カード支払いの場合は事前にご連絡ください）</li>
+</ul>
+
+<h3>その他の準備事項</h3>
+<ul>
+<li>医療機関から持ち込む器材の有無（酸素ボンベ、点滴、吸引器、モニター等）</li>
+<li>車内または搬送中に電源使用が必要な機器の有無</li>
+<li><strong>電源タイプ（医療用3口電源・一般用2口電源等）の確認</strong></li>
+<li>同時搬送する荷物の量（少ない・中等量・多い）</li>
+<li>荷物が多い場合は、車両スペースや同乗人数に影響することがあります</li>
+</ul>
+
+<div class="box red">
+<strong>【車いす・ストレッチャー選択時の注意】</strong><br>
+患者様の状態により車いすかストレッチャーを選ぶ場合は、移動時間を考慮してください。<br>
+長時間の座位保持が難しい場合や、医療的対応が必要な場合は、ストレッチャー搬送の方が安全な場合があります。<br>
+ストレッチャー以外では搬送中に行える医療的対応には限界があります。
+</div>
+
+<h3>個人情報について</h3>
+<div class="box">
+※急ぎの場合は分かる範囲でご連絡ください。<br>
+※個人情報保護の観点から大まかな情報で構いません。<br>
+※同乗のお付添がいない場合は、<strong>ご家族の電話番号</strong>をお知らせください。
+</div>
+
+<h3>料金に関する基本事項</h3>
+<table>
+<tr><th>項目</th><th>内容</th></tr>
+<tr><td><strong>運賃</strong></td><td>時間制運賃とメーター制運賃を比較し、<strong>高い方を適用</strong></td></tr>
+<tr><td><strong>待機時間</strong></td><td>病院・施設での待機時間も運賃に含まれます</td></tr>
+<tr><td><strong>介助料金</strong></td><td>必要な介助内容やスタッフ数により別途加算されます</td></tr>
+<tr><td><strong>事前確認</strong></td><td><span class="red">必ず事前に総額概算をご確認ください</span></td></tr>
+<tr><td><strong>カード支払い</strong></td><td>カード支払いをご希望の場合は、事前にご連絡ください</td></tr>
+</table>
+
+<div class="green"><strong>料金を抑えるためのポイント</strong><br>退院準備・精算・受入準備をお迎え時刻までに済ませていただくことで、待機時間の短縮につながります。</div>
+
+<h2>Ⅲ　配車依頼時の確認事項・ショートメールフォーム</h2>
+
+<div class="notice">フォームはコピペしてご利用いただけます。</div>
+
+<div class="form">
+<div class="formline">■ご依頼者名：＿＿＿＿＿＿＿＿＿＿</div>
+<div class="formline">■連絡先：＿＿＿＿＿＿＿＿＿＿</div><br>
+<div class="formline">■患者様のお名前：＿＿＿＿＿＿＿＿＿＿</div>
+<div class="formline">■年齢：＿＿＿＿歳</div>
+<div class="formline">■性別：男・女・その他</div>
+<div class="formline">■患者体重：＿＿＿＿kg</div><br>
+<div class="formline">■現在地：＿＿＿＿＿＿＿＿＿＿</div>
+<div class="formline">■搬送先：＿＿＿＿＿＿＿＿＿＿</div>
+<div class="formline">■希望日時：＿＿月＿＿日　＿＿時＿＿分</div><br>
+<div class="formline">■患者様の状態</div>
+<div class="formline">・歩行／車いす／ストレッチャー：＿＿＿＿＿＿</div>
+<div class="formline">・意識レベル：＿＿＿＿＿＿</div>
+<div class="formline">・吐き気の有無（車酔い既往）：有・無</div><br>
+<div class="formline">■車いすの場合</div>
+<div class="formline">・正しく着座できるか（偏り・麻痺）：可・不可</div>
+<div class="formline">・介添えで歩行可能：可・不可</div>
+<div class="formline">・車いす移動の予定時間：＿＿＿＿分程度</div><br>
+<div class="formline">■医療対応の有無</div>
+<div class="formline">（酸素・吸引など）：＿＿＿＿＿＿</div><br>
+<div class="formline">■自宅発着の場合</div>
+<div class="formline">・入口の状況（段差・階段など）：＿＿＿＿＿＿</div>
+<div class="formline">・担架搬送時の手伝い（家族等）：有・無</div><br>
+<div class="formline">■必要な人員数</div>
+<div class="formline">・通常対応・追加スタッフ必要・要相談</div>
+<div class="formline">・現場状況：＿＿＿＿＿＿</div><br>
+<div class="formline">■その他の準備事項</div>
+<div class="formline">・医療機関からの持ち込み器材：有・無（内容：＿＿＿＿＿＿）</div>
+<div class="formline">・電源使用が必要な機器：有・無（内容：＿＿＿＿＿＿）</div>
+<div class="formline">・電源タイプ：医療用3口電源・一般用2口電源・その他</div>
+<div class="formline">・同時搬送する荷物の量：少ない・中等量・多い</div><br>
+<div class="formline">■カード支払い希望：有・無</div>
+<div class="formline">※カード支払いの場合は事前にご連絡ください。</div><br>
+<div class="formline">■付添の有無：有・無</div><br>
+<div class="formline">■（可能であれば）自宅住所</div>
+<div class="formline">＿＿＿＿＿＿＿＿＿＿</div>
+</div>
+
+<h3>注意</h3>
+<div class="box">
+<p class="red">※個人情報に注意して、可能な範囲でご記載ください。</p>
+<p>※詳細は確認のお電話で伺います。</p>
+</div>
+
+<h3>配車予約時間までのお願い</h3>
+<div class="box">
+<p>配車予約時間までに出発のご準備をお願いいたします。<br>（費用縮小と車両のスムーズな循環のため）</p>
+<p>民間救急・介護タクシーは台数が少なく、主に午前中に集中して稼働しています。<br>一台の車両で複数のご利用者様を巡回しています。<br>時間の節約は費用の節約と遅延防止につながります。<br>ご協力をお願いいたします。</p>
+</div>
+
+<h3>電話予約の際にお伝えいただきたいこと</h3>
+<div class="box">
+<ul>
+<li>搬送希望日時</li>
+<li>現在地と搬送先</li>
+<li>患者様の状態（歩行・車いす・ストレッチャー）</li>
+<li>患者体重、意識レベル、吐き気や車酔いの有無</li>
+<li>酸素・吸引など医療対応の有無</li>
+<li>医療機関からの持ち込み器材の有無と内容</li>
+<li>電源使用が必要な機器の有無</li>
+<li>電源タイプ（医療用3口電源・一般用2口電源等）</li>
+<li>同時搬送する荷物の量（少ない・中等量・多い）</li>
+<li>必要な人員数（現場などの状況により、スタッフを増やす必要があります。詳しくお聞きします。）</li>
+<li>カード支払い希望の有無（カード支払いの場合は事前連絡が必要です）</li>
+<li>階段・段差の有無</li>
+<li>付き添いの有無</li>
+<li>ご家族や関係者の手伝い可否</li>
+</ul>
+</div>
+
+<div class="box red">
+<strong>【車いす・ストレッチャー選択時の注意】</strong><br>
+患者様の状態により車いすかストレッチャーを選ぶ場合は、移動時間を考慮してください。<br>
+ストレッチャー以外では搬送中に行える医療的対応には限界があります。
+</div>
+
+<h2>Ⅳ　医療機関・施設向け 伝言フォーム</h2>
+
+<div class="notice">病棟・相談員・施設担当者間の伝言用としてコピペしてご利用いただけます。</div>
+
+<div class="form">
+<div class="formline">【搬送伝言フォーム】</div><br>
+<div class="formline">■依頼元医療機関・施設名：＿＿＿＿＿＿＿＿＿＿</div>
+<div class="formline">■部署・病棟：＿＿＿＿＿＿＿＿＿＿</div>
+<div class="formline">■担当者名：＿＿＿＿＿＿＿＿＿＿</div>
+<div class="formline">■折返し連絡先：＿＿＿＿＿＿＿＿＿＿</div><br>
+<div class="formline">■患者様氏名（仮名・イニシャル可）：＿＿＿＿＿＿＿＿＿＿</div>
+<div class="formline">■年齢・性別：＿＿＿＿歳　男・女・その他</div>
+<div class="formline">■患者体重：＿＿＿＿kg</div>
+<div class="formline">■病名・主な状態：＿＿＿＿＿＿＿＿＿＿</div>
+<div class="formline">■搬送理由：退院・転院・受診・入所・その他（＿＿＿＿）</div><br>
+<div class="formline">■搬送日時：＿＿月＿＿日　＿＿時＿＿分</div>
+<div class="formline">■搬送元：＿＿＿＿＿＿＿＿＿＿</div>
+<div class="formline">■搬送先：＿＿＿＿＿＿＿＿＿＿</div><br>
+<div class="formline">■移動方法：歩行・車いす・リクライニング・ストレッチャー</div>
+<div class="formline">■酸素：不要・必要（＿＿L/分）</div>
+<div class="formline">■吸引：不要・必要</div>
+<div class="formline">■輸液：なし・あり（内容：＿＿＿＿）</div>
+<div class="formline">■持ち込み器材：なし・あり（内容：＿＿＿＿）</div>
+<div class="formline">■電源使用：不要・必要（医療用3口電源・一般用2口電源・その他）</div><br>
+<div class="formline">■必要人員：通常・追加スタッフ必要・要相談</div>
+<div class="formline">■付添：なし・家族・看護師・医師・施設職員</div>
+<div class="formline">■荷物量：少ない・中等量・多い</div>
+<div class="formline">■カード支払い希望：有・無</div>
+<div class="formline">■その他申し送り：＿＿＿＿＿＿＿＿＿＿</div>
+</div>
+
+
+<h2>Ⅴ　医療行為等に関する指示書について</h2>
+
+<div class="notice">
+医療行為等に関する指示書は、別表として末頁に添付しています。<br>
+搬送中に医療的管理が必要な場合は、末頁の「指示書1」「指示書2」をご確認・ご記載ください。
+</div>
+
+<div class="box">
+<strong>別表の構成</strong><br>
+・指示書1：患者情報・医療処置<br>
+・指示書2：搬送環境・器材・準備事項
+</div>
+
+<div class="box red">
+<strong>※搬送中に医療的管理が必要な場合は、医療機関側の指示内容、同乗者、持ち込み器材、緊急時連絡先を必ず事前に確認してください。</strong>
+</div>
+
+<hr>
+
+<h2>別表　医療行為等に関する指示書</h2>
+
+
+<section class="sheet">
+  <div style="text-align:right;font-size:13px;color:#555;">設定日：令和8年5月1日</div>
+  <h1>医療行為等に関する指示書 1<br>患者情報・医療処置</h1>
+
+  <div class="notice">
+    あて先：ネプトジャパン協同組合内 搬送担当事業者<br>
+    看護師・救急救命士 あて
+  </div>
+
+  <p class="small">
+    搬送中に医療的管理が必要な場合、医療機関側で必要事項をご記載ください。予約は必ずお電話でお願いいたします。メール送信の際は、必ず最初に電話連絡をお願いいたします。
+  </p>
+
+  <h2>1. 医療機関・記載者情報</h2>
+  <div class="grid">
+    <div class="formline">■医療機関名：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■診療科・病棟：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■記載者名：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■連絡先：＿＿＿＿＿＿＿＿＿＿</div>
+  </div>
+
+  <h2>2. 患者情報</h2>
+  <div class="grid">
+    <div class="formline">■患者氏名：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■年齢：＿＿＿＿歳</div>
+    <div class="formline">■性別：男・女・その他</div>
+    <div class="formline">■患者体重：＿＿＿＿kg</div>
+    <div class="formline">■病名：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■転院・搬送理由：＿＿＿＿＿＿</div>
+  </div>
+
+  <h2>3. 患者の状況</h2>
+  <div class="grid">
+    <div class="formline">■意識レベル：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■呼吸状態：安定・不安定・その他</div>
+    <div class="formline">■循環状態：安定・不安定・その他</div>
+    <div class="formline">■体位制限：なし・あり</div>
+    <div class="formline">■感染症情報：なし・あり</div>
+    <div class="formline">■移動方法：車いす・リクライニング・ストレッチャー</div>
+  </div>
+
+  <h2>4. 痰吸引の必要性</h2>
+  <div class="box">
+    <div class="formline">■痰吸引：不要・必要・状況により必要</div>
+    <div class="formline">■吸引頻度の目安：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■吸引時の注意事項：＿＿＿＿＿＿＿＿＿＿</div>
+  </div>
+
+  <h2>5. 酸素投与・酸素流量</h2>
+  <div class="box">
+    <div class="formline">■酸素投与：不要・必要</div>
+    <div class="formline">■通常流量：＿＿L/分　　■SpO2目標値：＿＿％以上</div>
+    <div class="formline">■SpO2低下時の流量調整指示：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■酸素投与方法：鼻カニューレ・マスク・その他（＿＿＿＿）</div>
+  </div>
+
+  <h2>6. 輸液</h2>
+  <div class="box">
+    <div class="formline">■輸液：なし・あり</div>
+    <div class="formline">■輸液の種類：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■滴下速度：＿＿mL/時 または ＿＿滴/分</div>
+    <div class="formline">■搬送中の注意事項：＿＿＿＿＿＿＿＿＿＿</div>
+  </div>
+
+  <h2>7. 緊急連絡先・その他必要事項</h2>
+  <div class="grid">
+    <div class="formline">■医療機関連絡先：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■担当医師・部署：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■家族緊急連絡先：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■その他：＿＿＿＿＿＿＿＿＿＿</div>
+  </div>
+
+  <div class="sign">
+    <div class="formline">■記載日：＿＿年＿＿月＿＿日　　■確認者署名：＿＿＿＿＿＿＿＿＿＿</div>
+  </div>
+</section>
+
+<section class="sheet">
+  <div style="text-align:right;font-size:13px;color:#555;">設定日：令和8年5月1日</div>
+  <h1>医療行為等に関する指示書 2<br>搬送環境・器材・準備事項</h1>
+
+  <div class="notice">
+    あて先：ネプトジャパン協同組合内 搬送担当事業者<br>
+    看護師・救急救命士 あて
+  </div>
+
+  <h2>1. 発地点・着地点の状況</h2>
+  <div class="box">
+    <div class="formline">■発地点：自宅・施設・病院・その他（＿＿＿＿）</div>
+    <div class="formline">■発地点住所：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■着地点：自宅・施設・病院・その他（＿＿＿＿）</div>
+    <div class="formline">■着地点住所：＿＿＿＿＿＿＿＿＿＿</div>
+  </div>
+
+  <h2>2. 階段・段差・搬出搬入状況</h2>
+  <div class="grid">
+    <div class="formline">■発地点階段：なし・あり（＿＿階）</div>
+    <div class="formline">■着地点階段：なし・あり（＿＿階）</div>
+    <div class="formline">■段差：なし・あり</div>
+    <div class="formline">■エレベーター：あり・なし</div>
+    <div class="formline">■通路幅・障害物：問題なし・要確認</div>
+    <div class="formline">■駐車位置：近い・遠い・要確認</div>
+  </div>
+
+  <h2>3. 搬送手伝いの有無・人数</h2>
+  <div class="box">
+    <div class="formline">■ご家族・関係者の手伝い：なし・あり</div>
+    <div class="formline">■人数：＿＿名</div>
+    <div class="formline">■手伝い可能な内容：担架保持・荷物運搬・誘導・その他（＿＿＿＿）</div>
+    <div class="formline">■追加スタッフ：不要・必要・要相談</div>
+  </div>
+
+  <h2>4. 病院からの持ち込み器材・荷物量</h2>
+  <div class="box">
+    <div class="formline">■持ち込み器材：なし・あり</div>
+    <div class="formline">■内容：酸素ボンベ・吸引器・輸液ポンプ・シリンジポンプ・モニター・その他（＿＿＿＿）</div>
+    <div class="formline">■返却方法・返却先：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■同時搬送する荷物量：少ない・中等量・多い</div>
+  </div>
+
+  <h2>5. 電源使用</h2>
+  <div class="box">
+    <div class="formline">■電源使用：不要・必要</div>
+    <div class="formline">■電源タイプ：医療用3口電源・一般用2口電源・その他（＿＿＿＿）</div>
+    <div class="formline">■バッテリー持続時間：＿＿時間程度</div>
+    <div class="formline">■電源に関する注意事項：＿＿＿＿＿＿＿＿＿＿</div>
+  </div>
+
+  <h2>6. 業者が準備する器材</h2>
+  <div class="box">
+    <div class="formline">■車いす：不要・必要</div>
+    <div class="formline">■リクライニング車いす：不要・必要</div>
+    <div class="formline">■ストレッチャー：不要・必要</div>
+    <div class="formline">■酸素：不要・必要（＿＿L/分）</div>
+    <div class="formline">■吸引器：不要・必要</div>
+    <div class="formline">■その他：＿＿＿＿＿＿＿＿＿＿</div>
+  </div>
+
+  <h2>7. 指示書作成者</h2>
+  <div class="grid">
+    <div class="formline">■作成者名：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■職種：医師・看護師・MSW・その他</div>
+    <div class="formline">■所属：＿＿＿＿＿＿＿＿＿＿</div>
+    <div class="formline">■連絡先：＿＿＿＿＿＿＿＿＿＿</div>
+  </div>
+
+  <div class="box red">
+    <strong>※予約は必ずお電話でお願いいたします。メール送信の際は、必ず最初に電話連絡をお願いいたします。</strong><br>
+    指示書送付先：nept.jp@gmail.com
+  </div>
+
+  <div class="sign">
+    <div class="formline">■記載日：＿＿年＿＿月＿＿日　　■確認者署名：＿＿＿＿＿＿＿＿＿＿</div>
+  </div>
+</section>
+
+
+<div class="box">
+<strong>■ 指示書送付先メール</strong><br>
+nept.jp@gmail.com
+</div>
+
+<div class="box red">
+<strong>【重要】予約は必ずお電話でお願いいたします。<br>
+メール送信の際は、必ず最初に電話連絡をお願いいたします。</strong>
+</div>
+
+<div class="box red">
+<strong>※搬送中に医療的管理が必要な場合は、医療機関側の指示内容、同乗者、持ち込み器材、緊急時連絡先を必ず事前に確認してください。</strong>
+</div>
+
+<div class="cta">
+<strong>お問い合わせ・配車受付（組合窓口）</strong>
+<div class="tel">050-8894-2039</div>
+<div class="small">
+24時間対応<br>
+※非通知不可。頭に186をつけて発信してください。
+</div>
+
+<hr style="border-top:1px solid rgba(255,255,255,0.45);margin:18px 0;">
+
+<strong>事務局（合同会社サポートサービスオレンジ）</strong>
+<div class="tel">022-200-6898</div>
+<div class="tel">090-6626-1911</div>
+<div class="small">
+受付電話　午前8時～午後8時<br>
+※ショートメールは携帯番号へお願いいたします。
+</div>
+</div>
+
+</div>
+</body>
+</html>
