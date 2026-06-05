@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- saved from url=(0052)file:///C:/Users/tama1/Downloads/preview%20(11).html -->
+<!-- saved from url=(0052)file:///C:/Users/tama1/Downloads/preview%20(12).html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="酸素計算">
-<title>酸素残量計算 Ver.2.1</title>
+<title>酸素残量計算 Ver.2.2</title>
 <style>
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Yu Gothic",sans-serif;background:#f4f7fb;color:#1f2937}
 header{background:linear-gradient(135deg,#0b74d1,#0ea5e9);color:white;text-align:center;padding:22px 16px}
@@ -27,18 +27,26 @@ button{width:100%;border:0;border-radius:14px;padding:15px;font-size:18px;font-w
 .box{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:12px;text-align:left}
 .box b{display:block;font-size:13px;color:#64748b;margin-bottom:4px}
 .box span{font-size:20px;font-weight:900;color:#0f172a}
+.alert{border-radius:18px;padding:16px;margin-bottom:14px;text-align:center;font-weight:900;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.alert .label{font-size:24px;margin-bottom:6px}
+.alert .message{font-size:16px;line-height:1.5}
+.alert-ok{background:#ecfdf5;color:#047857;border:2px solid #10b981}
+.alert-warn{background:#fffbeb;color:#b45309;border:2px solid #f59e0b}
+.alert-danger{background:#fef2f2;color:#b91c1c;border:2px solid #ef4444}
 .note{font-size:13px;line-height:1.7;color:#4b5563}
 .version{font-size:12px;opacity:.85;margin-top:4px}
 </style>
 </head>
 <body>
 <header>
-<h1>酸素残量計算 Ver.2.1</h1>
+<h1>酸素残量計算 Ver.2.2</h1>
 <p>医療用酸素の残圧・流量・安全係数から使用可能時間を計算</p>
 <div class="version">標準設定：500Lボンベ／満充填14.7MPa</div>
 </header>
 
 <main>
+<div id="pressureAlert" class="alert alert-ok"><div class="label">🟢 正常</div><div class="message">酸素残量良好。搬送可能です。</div></div>
+
 <div class="card">
 <label>ボンベ種類</label>
 <select id="cylinder" onchange="calc()">
@@ -96,6 +104,9 @@ button{width:100%;border:0;border-radius:14px;padding:15px;font-size:18px;font-w
 
 <div class="card">
 <div class="note">
+<b>低残圧警告の基準</b><br>
+10MPa以上：正常／5〜9.9MPa：注意／3〜4.9MPa：警告／3MPa未満：危険<br>
+さらに、安全使用時間が「搬送予定時間＋30分」を下回る場合も交換推奨として表示します。<br><br>
 <b>計算式</b><br>
 現在酸素量＝満充填酸素量 × 現在残圧 ÷ 満充填圧力<br>
 理論時間＝現在酸素量 ÷ 流量<br>
@@ -118,6 +129,11 @@ function timeText(mins){
 function oxygenText(liters){
  if(!isFinite(liters)||liters<=0)return "0L";
  return "約"+Math.round(liters)+"L";
+}
+function setAlert(level, label, message){
+ const a=document.getElementById("pressureAlert");
+ a.className="alert "+level;
+ a.innerHTML='<div class="label">'+label+'</div><div class="message">'+message+'</div>';
 }
 function calc(){
  const fullLiters=val("cylinder");
@@ -148,11 +164,11 @@ function calc(){
  const needed=planned*flow;
  const remainingAfter=Math.max(0,oxygen-needed);
  const shortage=Math.max(0,needed-safeOxygen);
- const bottleCount = (planned>0 && flow>0 && fullSafeOxygen>0) ? Math.max(1, Math.ceil(needed/fullSafeOxygen)) : 0;
+ const bottleCount=(planned>0&&flow>0&&fullSafeOxygen>0)?Math.max(1,Math.ceil(needed/fullSafeOxygen)):0;
+ const needExchangeByTime=(planned>0 && safe < planned + 30);
 
  document.getElementById("safeTime").textContent=timeText(safe);
- document.getElementById("detail").textContent=
-  "理論時間："+timeText(raw)+"　現在酸素量："+oxygenText(oxygen);
+ document.getElementById("detail").textContent="理論時間："+timeText(raw)+"　現在酸素量："+oxygenText(oxygen);
 
  const st=document.getElementById("status");
  st.className="status";
@@ -176,12 +192,24 @@ function calc(){
   judge.style.background="#fef2f2";judge.style.color="#b91c1c";
  }
 
- document.getElementById("exchangeTime").textContent = timeText(safe) + "後";
- document.getElementById("bottleCount").textContent = bottleCount>0 ? bottleCount+"本" : "--";
- document.getElementById("neededOxygen").textContent = oxygenText(needed);
- document.getElementById("shortageOxygen").textContent = oxygenText(shortage);
- document.getElementById("remainingOxygen").textContent = oxygenText(remainingAfter);
- document.getElementById("currentOxygen").textContent = oxygenText(oxygen);
+ if(pressure < 3){
+   setAlert("alert-danger","🚨 危険","残圧危険域です。搬送前にボンベ交換してください。");
+ }else if(pressure < 5){
+   setAlert("alert-danger","🔴 交換推奨","残圧低下警告です。搬送前の交換を推奨します。");
+ }else if(needExchangeByTime){
+   setAlert("alert-danger","🔴 交換推奨","安全使用時間が搬送予定時間＋30分を下回っています。予備ボンベを準備してください。");
+ }else if(pressure < 10){
+   setAlert("alert-warn","🟡 注意","残圧が低下しています。長距離搬送前は交換を検討してください。");
+ }else{
+   setAlert("alert-ok","🟢 正常","酸素残量良好。搬送可能です。");
+ }
+
+ document.getElementById("exchangeTime").textContent=timeText(safe)+"後";
+ document.getElementById("bottleCount").textContent=bottleCount>0?bottleCount+"本":"--";
+ document.getElementById("neededOxygen").textContent=oxygenText(needed);
+ document.getElementById("shortageOxygen").textContent=oxygenText(shortage);
+ document.getElementById("remainingOxygen").textContent=oxygenText(remainingAfter);
+ document.getElementById("currentOxygen").textContent=oxygenText(oxygen);
 }
 calc();
 </script>
