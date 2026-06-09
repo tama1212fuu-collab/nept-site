@@ -1,217 +1,102 @@
 <!DOCTYPE html>
-<!-- saved from url=(0052)file:///C:/Users/tama1/Downloads/preview%20(12).html -->
-<html lang="ja"><head><link rel="apple-touch-icon" href="icon.png"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="ja">
+<head>
+<link rel="apple-touch-icon" href="icon.png">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="酸素計算">
-<title>酸素残量計算 Ver.2.2</title>
+<title>酸素残量計算 Ver.3.3</title>
 <style>
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Yu Gothic",sans-serif;background:#f4f7fb;color:#1f2937}
+:root{--main:#0b74d1;--dark:#111827;--bg:#f4f7fb}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Yu Gothic",sans-serif;background:var(--bg);color:var(--dark)}
 header{background:linear-gradient(135deg,#0b74d1,#0ea5e9);color:white;text-align:center;padding:22px 16px}
-h1{margin:0;font-size:22px}
-header p{margin:8px 0 0;font-size:13px}
-main{padding:14px;max-width:620px;margin:auto}
+h1{margin:0;font-size:22px} header p{margin:8px 0 0;font-size:13px}
+main{padding:14px;max-width:640px;margin:auto}
 .card{background:white;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
 label{font-weight:800;display:block;margin:13px 0 6px}
 input,select{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:12px;font-size:18px;box-sizing:border-box;background:white}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 button{width:100%;border:0;border-radius:14px;padding:15px;font-size:18px;font-weight:800;background:#0b74d1;color:white;margin-top:14px}
-.result{text-align:center;background:#eff6ff}
-.big{font-size:36px;font-weight:900;color:#0b74d1;margin:8px 0}
-.sub{font-size:15px;color:#6b7280;line-height:1.6}
-.status{font-size:19px;font-weight:900;margin-top:10px}
+.typeBox{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.typeLabel{border:2px solid #d1d5db;border-radius:16px;padding:14px;text-align:center;font-weight:900;background:#f9fafb}
+.typeLabel input{width:auto;margin-right:6px}
+.typeLabel.general.active{border-color:#111827;color:#111827;background:#f3f4f6}
+.typeLabel.portable.active{border-color:#0b74d1;color:#0b74d1;background:#eff6ff}
+.portable-mode label,.portable-mode select,.portable-mode input,.portable-mode .box span,.portable-mode .box b,.portable-mode .sub,.portable-mode .portableText{color:#0b74d1}
+.result{text-align:center;background:#eff6ff}.big{font-size:36px;font-weight:900;color:#0b74d1;margin:8px 0}
+.sub{font-size:15px;color:#6b7280;line-height:1.6}.status{font-size:19px;font-weight:900;margin-top:10px}
 .ok{color:#059669}.warn{color:#d97706}.danger{color:#dc2626}
 .pill{display:inline-block;border-radius:999px;padding:7px 11px;font-weight:800;font-size:14px;margin-top:8px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .box{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:12px;text-align:left}
-.box b{display:block;font-size:13px;color:#64748b;margin-bottom:4px}
-.box span{font-size:20px;font-weight:900;color:#0f172a}
+.box b{display:block;font-size:13px;color:#64748b;margin-bottom:4px}.box span{font-size:20px;font-weight:900;color:#0f172a}
 .alert{border-radius:18px;padding:16px;margin-bottom:14px;text-align:center;font-weight:900;box-shadow:0 4px 14px rgba(0,0,0,.08)}
-.alert .label{font-size:24px;margin-bottom:6px}
-.alert .message{font-size:16px;line-height:1.5}
-.alert-ok{background:#ecfdf5;color:#047857;border:2px solid #10b981}
-.alert-warn{background:#fffbeb;color:#b45309;border:2px solid #f59e0b}
-.alert-danger{background:#fef2f2;color:#b91c1c;border:2px solid #ef4444}
-.note{font-size:13px;line-height:1.7;color:#4b5563}
-.version{font-size:12px;opacity:.85;margin-top:4px}
+.alert .label{font-size:24px;margin-bottom:6px}.alert .message{font-size:16px;line-height:1.5}
+.alert-ok{background:#ecfdf5;color:#047857;border:2px solid #10b981}.alert-warn{background:#fffbeb;color:#b45309;border:2px solid #f59e0b}
+.alert-orange{background:#fff7ed;color:#c2410c;border:2px solid #f97316}.alert-danger{background:#fef2f2;color:#b91c1c;border:2px solid #ef4444}
+.note{font-size:13px;line-height:1.7;color:#4b5563}.version{font-size:12px;opacity:.85;margin-top:4px}.hidden{display:none}
 </style>
 </head>
 <body>
-<header>
-<h1>酸素残量計算 Ver.2.2</h1>
-<p>医療用酸素の残圧・流量・安全係数から使用可能時間を計算</p>
-<div class="version">標準設定：500Lボンベ／満充填14.7MPa</div>
-</header>
-
-<main>
-<div id="pressureAlert" class="alert alert-ok"><div class="label">🟢 正常</div><div class="message">酸素残量良好。搬送可能です。</div></div>
-
+<header><h1>酸素残量計算 Ver.3.3</h1><p>一般医療用・携帯用酸素ボンベ対応</p><div class="version">一般医療用：14.7MPa固定 ／ 携帯用：19.6MPa固定</div></header>
+<main id="appRoot">
+<div id="pressureAlert" class="alert alert-ok"><div class="label">🟢 正常</div><div class="message">酸素残量良好</div></div>
 <div class="card">
 <label>ボンベ種類</label>
-<select id="cylinder" onchange="calc()">
-<option value="300">2Lボンベ：約300L</option>
-<option value="500" selected="">3.4Lボンベ：約500L</option>
-<option value="1500">10Lボンベ：約1500L</option>
-</select>
-
-<div class="row">
-<div>
-<label>現在残圧（MPa）</label>
-<input id="pressure" type="number" value="14.7" step="0.1" oninput="calc()">
+<div class="typeBox">
+<label id="generalLabel" class="typeLabel general active"><input type="radio" name="type" value="general" checked onchange="switchType()"> ● 一般医療用</label>
+<label id="portableLabel" class="typeLabel portable"><input type="radio" name="type" value="portable" onchange="switchType()"> ● 携帯用</label>
 </div>
-<div>
-<label>満充填圧力</label>
-<select id="fullPressure" onchange="calc()">
-<option value="14.7" selected="">14.7MPa</option>
-<option value="19.6">19.6MPa</option>
+<div id="generalInputs">
+<label>ボンベ容量</label>
+<select id="generalCylinder" onchange="calc()">
+<option value="300">2.0L（約300L）</option>
+<option value="500" selected>3.4L（約500L）</option>
+<option value="1500">10L（約1500L）</option>
+</select>
+<label>酸素流量</label>
+<select id="generalFlow" onchange="calc()">
+<option value="0.5">0.5L/分</option><option value="1">1L/分</option><option value="2" selected>2L/分</option><option value="3">3L/分</option><option value="4">4L/分</option><option value="5">5L/分</option><option value="6">6L/分</option><option value="8">8L/分</option><option value="10">10L/分</option><option value="15">15L/分</option>
 </select>
 </div>
-</div>
-
-<label>酸素流量（L/分）</label>
-<input id="flow" type="number" value="2" step="0.1" min="0.1" oninput="calc()">
-
-<label>安全係数</label>
-<select id="safety" onchange="calc()">
-<option value="0.8" selected="">80％で計算（20％予備）</option>
-<option value="0.7">70％で計算（30％予備）</option>
-<option value="reserve30">30分を予備として差し引く</option>
+<div id="portableInputs" class="hidden">
+<label class="portableText">携帯用ボンベ容量</label>
+<select id="portableCylinder" onchange="calc()">
+<option value="200">1.1L（約200L）</option>
+<option value="400" selected>2.0L（約400L）</option>
+<option value="560">2.8L（約560L）</option>
 </select>
-
-<label>搬送予定時間（分）</label>
-<input id="planned" type="number" value="60" step="1" min="0" oninput="calc()">
-
+<label class="portableText">使用方式</label>
+<select id="portableMethod" onchange="calc()"><option value="pulse" selected>吸気同調</option><option value="continuous">連続流</option></select>
+<label class="portableText">使用設定</label>
+<select id="portableSetting" onchange="calc()"><option value="low">低流量</option><option value="standard" selected>標準</option><option value="high">多め</option></select>
+</div>
+<label>現在残圧（MPa）</label><input id="pressure" type="number" value="14.7" min="0" max="14.7" step="0.1" oninput="limitPressure();calc()">
+<label>安全係数</label><select id="safety" onchange="calc()"><option value="0.8" selected>標準（80％）</option><option value="0.7">安全重視（70％）</option><option value="reserve30">30分予備</option></select>
+<label>搬送予定時間</label><select id="plannedSelect" onchange="toggleCustomTime();calc()"><option value="15">15分</option><option value="30">30分</option><option value="45">45分</option><option value="60" selected>60分</option><option value="90">90分</option><option value="120">120分</option><option value="180">180分</option><option value="240">240分</option><option value="300">300分</option><option value="custom">その他（手入力）</option></select>
+<div id="customTimeBox" class="hidden"><label>その他の搬送予定時間（分）</label><input id="plannedCustom" type="number" value="60" step="1" min="0" oninput="calc()"></div>
 <button onclick="calc()">再計算</button>
 </div>
-
 <div class="card result">
-<div class="sub">安全係数を考慮した使用可能時間</div>
-<div class="big" id="safeTime">3時間20分</div>
-<div class="sub" id="detail">理論時間：4時間10分　現在酸素量：約500L</div>
-<div class="status ok" id="status">確認：使用可能時間に余裕あり</div>
-<div class="pill" id="judge" style="background: rgb(236, 253, 245); color: rgb(4, 120, 87);">搬送判定：余裕あり（予備 約140分）</div>
-
+<div class="sub" id="modeText">一般医療用モード</div><div class="sub">安全係数を考慮した使用可能時間</div><div class="big" id="safeTime">--</div><div class="sub" id="detail">--</div><div class="status" id="status">--</div><div class="pill" id="judge">搬送判定：--</div>
 <div class="grid">
-<div class="box"><b>ボンベ交換目安</b><span id="exchangeTime">3時間20分後</span></div>
-<div class="box"><b>必要ボンベ本数</b><span id="bottleCount">1本</span></div>
-<div class="box"><b>搬送必要酸素量</b><span id="neededOxygen">約120L</span></div>
-<div class="box"><b>不足酸素量</b><span id="shortageOxygen">0L</span></div>
-<div class="box"><b>到着時予想残量</b><span id="remainingOxygen">約380L</span></div>
-<div class="box"><b>現在酸素量</b><span id="currentOxygen">約500L</span></div>
-</div>
-</div>
-
-<div class="card">
-<div class="note">
-<b>低残圧警告の基準</b><br>
-10MPa以上：正常／5〜9.9MPa：注意／3〜4.9MPa：警告／3MPa未満：危険<br>
-さらに、安全使用時間が「搬送予定時間＋30分」を下回る場合も交換推奨として表示します。<br><br>
-<b>計算式</b><br>
-現在酸素量＝満充填酸素量 × 現在残圧 ÷ 満充填圧力<br>
-理論時間＝現在酸素量 ÷ 流量<br>
-安全時間＝理論時間 × 安全係数、または理論時間 − 30分<br>
-必要酸素量＝搬送予定時間 × 流量<br>
-必要ボンベ本数＝必要酸素量 ÷ 安全係数を考慮した満充填1本分の使用可能酸素量（小数点切り上げ）<br><br>
-<b>注意</b><br>
-この計算は目安です。実際の搬送では、ボンベ表示、減圧弁、流量計、予備ボンベ、待機時間、患者状態を必ず確認してください。
-</div>
-</div>
+<div class="box"><b>ボンベ交換目安</b><span id="exchangeTime">--</span></div><div class="box"><b>必要ボンベ本数</b><span id="bottleCount">--</span></div><div class="box"><b>搬送必要酸素量</b><span id="neededOxygen">--</span></div><div class="box"><b>不足酸素量</b><span id="shortageOxygen">--</span></div><div class="box"><b>到着時予想残量</b><span id="remainingOxygen">--</span></div><div class="box"><b>現在酸素量</b><span id="currentOxygen">--</span></div>
+</div></div>
+<div class="card"><div class="note"><b>一般医療用</b><br>満充填圧力14.7MPa固定。流量は誤入力防止のため選択式です。<br><br><b>携帯用</b><br>満充填圧力19.6MPa固定。携帯用は1.1L＝約200L、2.0L＝約400L、2.8L＝約560Lの目安容量で計算します。使用時間は機種・吸気同調の作動状況・呼吸状態により変動するため目安です。<br><br><b>警告基準</b><br>10MPa以上：正常／5〜9.9MPa：注意／3〜4.9MPa：交換推奨／3MPa未満：危険。さらに、安全使用時間が「搬送予定時間＋30分」を下回る場合も交換推奨として表示します。<br><br><b>注意</b><br>この計算は目安です。実際の搬送では、ボンベ表示、減圧弁、流量計、予備ボンベ、待機時間、患者状態を必ず確認してください。</div></div>
 </main>
-
 <script>
 function val(id){return parseFloat(document.getElementById(id).value)||0}
-function timeText(mins){
- if(!isFinite(mins)||mins<=0)return "0分";
- const h=Math.floor(mins/60),m=Math.floor(mins%60);
- return h>0?h+"時間"+m+"分":m+"分";
-}
-function oxygenText(liters){
- if(!isFinite(liters)||liters<=0)return "0L";
- return "約"+Math.round(liters)+"L";
-}
-function setAlert(level, label, message){
- const a=document.getElementById("pressureAlert");
- a.className="alert "+level;
- a.innerHTML='<div class="label">'+label+'</div><div class="message">'+message+'</div>';
-}
-function calc(){
- const fullLiters=val("cylinder");
- const pressure=val("pressure");
- const fullPressure=val("fullPressure");
- const flow=val("flow");
- const planned=val("planned");
-
- const oxygen=fullLiters*(pressure/fullPressure);
- const raw=flow>0?oxygen/flow:0;
-
- const safetyValue=document.getElementById("safety").value;
- let safe=raw;
- let safeOxygen=oxygen;
- let fullSafeOxygen=fullLiters;
-
- if(safetyValue==="reserve30"){
-   safe=Math.max(0,raw-30);
-   safeOxygen=Math.max(0,oxygen-(flow*30));
-   fullSafeOxygen=Math.max(0,fullLiters-(flow*30));
- }else{
-   const rate=parseFloat(safetyValue);
-   safe=raw*rate;
-   safeOxygen=oxygen*rate;
-   fullSafeOxygen=fullLiters*rate;
- }
-
- const needed=planned*flow;
- const remainingAfter=Math.max(0,oxygen-needed);
- const shortage=Math.max(0,needed-safeOxygen);
- const bottleCount=(planned>0&&flow>0&&fullSafeOxygen>0)?Math.max(1,Math.ceil(needed/fullSafeOxygen)):0;
- const needExchangeByTime=(planned>0 && safe < planned + 30);
-
- document.getElementById("safeTime").textContent=timeText(safe);
- document.getElementById("detail").textContent="理論時間："+timeText(raw)+"　現在酸素量："+oxygenText(oxygen);
-
- const st=document.getElementById("status");
- st.className="status";
- if(safe<30){st.textContent="危険：予備ボンベ確認・交換を推奨";st.classList.add("danger")}
- else if(safe<60){st.textContent="注意：残時間が少なめです";st.classList.add("warn")}
- else{st.textContent="確認：使用可能時間に余裕あり";st.classList.add("ok")}
-
- const judge=document.getElementById("judge");
- const diff=safe-planned;
- if(planned<=0){
-  judge.textContent="搬送判定：搬送予定時間を入力してください";
-  judge.style.background="#eef2ff";judge.style.color="#3730a3";
- }else if(diff>=30){
-  judge.textContent="搬送判定：余裕あり（予備 約"+Math.floor(diff)+"分）";
-  judge.style.background="#ecfdf5";judge.style.color="#047857";
- }else if(diff>=0){
-  judge.textContent="搬送判定：要注意（余裕 約"+Math.floor(diff)+"分）";
-  judge.style.background="#fffbeb";judge.style.color="#b45309";
- }else{
-  judge.textContent="搬送判定：不足の恐れ（約"+Math.abs(Math.floor(diff))+"分不足）";
-  judge.style.background="#fef2f2";judge.style.color="#b91c1c";
- }
-
- if(pressure < 3){
-   setAlert("alert-danger","🚨 危険","残圧危険域です。搬送前にボンベ交換してください。");
- }else if(pressure < 5){
-   setAlert("alert-danger","🔴 交換推奨","残圧低下警告です。搬送前の交換を推奨します。");
- }else if(needExchangeByTime){
-   setAlert("alert-danger","🔴 交換推奨","安全使用時間が搬送予定時間＋30分を下回っています。予備ボンベを準備してください。");
- }else if(pressure < 10){
-   setAlert("alert-warn","🟡 注意","残圧が低下しています。長距離搬送前は交換を検討してください。");
- }else{
-   setAlert("alert-ok","🟢 正常","酸素残量良好。搬送可能です。");
- }
-
- document.getElementById("exchangeTime").textContent=timeText(safe)+"後";
- document.getElementById("bottleCount").textContent=bottleCount>0?bottleCount+"本":"--";
- document.getElementById("neededOxygen").textContent=oxygenText(needed);
- document.getElementById("shortageOxygen").textContent=oxygenText(shortage);
- document.getElementById("remainingOxygen").textContent=oxygenText(remainingAfter);
- document.getElementById("currentOxygen").textContent=oxygenText(oxygen);
-}
-calc();
+function getType(){return document.querySelector('input[name="type"]:checked').value}
+function timeText(mins){if(!isFinite(mins)||mins<=0)return "0分";const h=Math.floor(mins/60),m=Math.floor(mins%60);return h>0?h+"時間"+m+"分":m+"分"}
+function oxygenText(liters){if(!isFinite(liters)||liters<=0)return "0L";return "約"+Math.round(liters)+"L"}
+function setAlert(level,label,message){const a=document.getElementById("pressureAlert");a.className="alert "+level;a.innerHTML='<div class="label">'+label+'</div><div class="message">'+message+'</div>'}
+function toggleCustomTime(){const sel=document.getElementById("plannedSelect").value;document.getElementById("customTimeBox").classList.toggle("hidden",sel!=="custom")}
+function getPlanned(){const sel=document.getElementById("plannedSelect").value;return sel==="custom"?val("plannedCustom"):parseFloat(sel)}
+function portableFlowEquivalent(){const method=document.getElementById("portableMethod").value;const setting=document.getElementById("portableSetting").value;if(method==="continuous"){if(setting==="low")return 1.0;if(setting==="standard")return 2.0;return 3.0}else{if(setting==="low")return 0.5;if(setting==="standard")return 1.0;return 1.5}}
+function limitPressure(){const maxPressure=getType()==="portable"?19.6:14.7;const p=document.getElementById("pressure");p.max=maxPressure;let v=parseFloat(p.value);if(!isNaN(v)&&v>maxPressure)p.value=maxPressure;if(!isNaN(v)&&v<0)p.value=0}
+function switchType(){const isPortable=getType()==="portable";document.getElementById("pressure").max=isPortable?19.6:14.7;document.getElementById("generalInputs").classList.toggle("hidden",isPortable);document.getElementById("portableInputs").classList.toggle("hidden",!isPortable);document.getElementById("appRoot").classList.toggle("portable-mode",isPortable);document.getElementById("generalLabel").classList.toggle("active",!isPortable);document.getElementById("portableLabel").classList.toggle("active",isPortable);document.getElementById("modeText").textContent=isPortable?"携帯用モード（19.6MPa固定）":"一般医療用モード（14.7MPa固定）";if(isPortable&&val("pressure")===14.7)document.getElementById("pressure").value=19.6;if(!isPortable&&val("pressure")===19.6)document.getElementById("pressure").value=14.7;limitPressure();calc()}
+function calc(){limitPressure();const isPortable=getType()==="portable";const fullPressure=isPortable?19.6:14.7;const pressure=val("pressure");const planned=getPlanned();let fullLiters,flow;if(isPortable){fullLiters=val("portableCylinder");flow=portableFlowEquivalent()}else{fullLiters=val("generalCylinder");flow=val("generalFlow")}const oxygen=fullLiters*(pressure/fullPressure);const raw=flow>0?oxygen/flow:0;const safetyValue=document.getElementById("safety").value;let safe=raw,safeOxygen=oxygen,fullSafeOxygen=fullLiters;if(safetyValue==="reserve30"){safe=Math.max(0,raw-30);safeOxygen=Math.max(0,oxygen-(flow*30));fullSafeOxygen=Math.max(0,fullLiters-(flow*30))}else{const rate=parseFloat(safetyValue);safe=raw*rate;safeOxygen=oxygen*rate;fullSafeOxygen=fullLiters*rate}const needed=planned*flow;const remainingAfter=Math.max(0,oxygen-needed);const shortage=Math.max(0,needed-safeOxygen);const bottleCount=(planned>0&&flow>0&&fullSafeOxygen>0)?Math.max(1,Math.ceil(needed/fullSafeOxygen)):0;const needExchangeByTime=(planned>0&&safe<planned+30);document.getElementById("safeTime").textContent=timeText(safe);const typeDetail=isPortable?"換算流量："+flow+"L/分相当　現在酸素量："+oxygenText(oxygen):"流量："+flow+"L/分　現在酸素量："+oxygenText(oxygen);document.getElementById("detail").textContent="理論時間："+timeText(raw)+"　"+typeDetail;const st=document.getElementById("status");st.className="status";if(safe<30){st.textContent="危険：予備ボンベ確認・交換を推奨";st.classList.add("danger")}else if(safe<60){st.textContent="注意：残時間が少なめです";st.classList.add("warn")}else{st.textContent="確認：使用可能時間に余裕あり";st.classList.add("ok")}const judge=document.getElementById("judge");const diff=safe-planned;if(planned<=0){judge.textContent="搬送判定：搬送予定時間を入力してください";judge.style.background="#eef2ff";judge.style.color="#3730a3"}else if(diff>=30){judge.textContent="搬送判定：余裕あり（予備 約"+Math.floor(diff)+"分）";judge.style.background="#ecfdf5";judge.style.color="#047857"}else if(diff>=0){judge.textContent="搬送判定：要注意（余裕 約"+Math.floor(diff)+"分）";judge.style.background="#fffbeb";judge.style.color="#b45309"}else{judge.textContent="搬送判定：不足の恐れ（約"+Math.abs(Math.floor(diff))+"分不足）";judge.style.background="#fef2f2";judge.style.color="#b91c1c"}if(pressure<3){setAlert("alert-danger","🔴 危険","残圧危険域です。搬送前にボンベ交換してください。")}else if(pressure<5){setAlert("alert-orange","🟠 交換推奨","残圧低下です。搬送前の交換を推奨します。")}else if(needExchangeByTime){setAlert("alert-orange","🟠 交換推奨","安全使用時間が搬送予定時間＋30分を下回っています。予備ボンベを準備してください。")}else if(pressure<10){setAlert("alert-warn","🟡 注意","残圧が低下しています。長距離搬送前は交換を検討してください。")}else{setAlert("alert-ok","🟢 正常","酸素残量良好。搬送可能です。")}document.getElementById("exchangeTime").textContent=timeText(safe)+"後";document.getElementById("bottleCount").textContent=bottleCount>0?bottleCount+"本":"--";document.getElementById("neededOxygen").textContent=oxygenText(needed);document.getElementById("shortageOxygen").textContent=oxygenText(shortage);document.getElementById("remainingOxygen").textContent=oxygenText(remainingAfter);document.getElementById("currentOxygen").textContent=oxygenText(oxygen)}
+toggleCustomTime();switchType();
 </script>
-
-</body></html>
+</body>
+</html>
