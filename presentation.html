@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行政の縮小化と行政システムの再構築の一考察</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #0f172a; font-family: 'Noto Sans JP', sans-serif; color: #334155; padding: 40px; display: flex; flex-direction: column; align-items: center; scroll-behavior: smooth; }
+        
+        /* 全体再生コントロールバー */
+        .control-panel { background: #1e293b; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 15px 40px; display: flex; justify-content: center; align-items: center; gap: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border-bottom: 2px solid #10b981; }
+        .panel-btn { background: #10b981; color: white; border: none; padding: 10px 24px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.2s; }
+        .panel-btn:hover { background: #059669; transform: translateY(-2px); }
+        .panel-btn.stop-btn { background: #ef4444; }
+        .panel-btn.stop-btn:hover { background: #dc2626; }
+        .status-text { color: #cbd5e1; font-weight: bold; font-size: 15px; }
+
+        .slide-deck { width: 100%; max-width: 1280px; margin-top: 60px; }
+        .slide-card { background: #ffffff; width: 1280px; height: 720px; margin-bottom: 100px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); display: flex; flex-direction: column; position: relative; scroll-margin-top: 100px; }
+        
+        /* Layouts */
+        .slide-header { background: #0f172a; padding: 30px 60px; display: flex; align-items: center; justify-content: space-between; border-bottom: 4px solid #10b981; }
+        .slide-logo { color: #10b981; font-weight: bold; font-size: 18px; letter-spacing: 0.1em; }
+        .slide-number { color: #64748b; font-size: 16px; }
+        
+        .slide-body { flex: 1; padding: 50px 80px; display: flex; flex-direction: column; justify-content: center; position: relative; background: radial-gradient(circle at 90% 10%, #f8fafc 0%, #ffffff 100%); }
+        .slide-title { font-size: 36px; color: #0f172a; font-weight: 700; margin-bottom: 35px; border-left: 8px solid #10b981; padding-left: 20px; line-height: 1.3; }
+        
+        /* Title Slide Specific */
+        .title-slide { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; text-align: center; justify-content: center; align-items: center; padding: 80px; }
+        .title-slide h1 { font-size: 44px; font-weight: 700; line-height: 1.4; color: #ffffff; margin-bottom: 20px; }
+        .title-slide h2 { font-size: 24px; color: #10b981; font-weight: 400; margin-bottom: 50px; }
+        .title-slide .badge { background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 8px 16px; border-radius: 30px; font-size: 14px; display: inline-block; margin-bottom: 30px; font-weight: bold; }
+        
+        /* Grid Elements */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; width: 100%; }
+        
+        .card-dark { background: #0f172a; color: white; padding: 30px; border-radius: 12px; border-top: 4px solid #10b981; }
+        .card-light { background: #f8fafc; padding: 30px; border-radius: 12px; border-left: 4px solid #0f172a; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .card-emerald { background: #f0fdf4; padding: 30px; border-radius: 12px; border-left: 4px solid #10b981; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
+        h3 { font-size: 22px; color: #0f172a; margin-bottom: 15px; font-weight: 700; }
+        .card-dark h3 { color: #10b981; }
+        
+        ul { list-style-type: none; }
+        li { margin-bottom: 12px; font-size: 18px; color: #475569; display: flex; align-items: flex-start; line-height: 1.5; }
+        .card-dark li { color: #cbd5e1; }
+        li i { color: #10b981; margin-right: 12px; margin-top: 5px; font-size: 16px; }
+        
+        .vs-box { display: flex; align-items: center; justify-content: center; background: #e2e8f0; font-weight: bold; border-radius: 50px; width: 50px; height: 50px; margin: auto; color: #0f172a; border: 3px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        /* Presenter Notes Footer */
+        .presenter-notes { background: #f1f5f9; padding: 25px 50px; font-size: 15px; color: #334155; line-height: 1.6; border-top: 2px dashed #cbd5e1; display: flex; justify-content: space-between; align-items: center; }
+        .notes-content { flex: 1; padding-right: 20px; }
+        .presenter-notes-title { font-weight: 700; color: #0f172a; margin-bottom: 8px; display: flex; align-items: center; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .presenter-notes-title i { color: #10b981; margin-right: 8px; }
+        
+        /* Highlight border for playing slide */
+        .slide-card.playing-now { border: 4px solid #10b981; }
+        
+        .highlight { color: #10b981; font-weight: 700; }
+        .big-text { font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1.4; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="control-panel">
+        <button class="panel-btn" id="start-panel-btn" onclick="startAutoPresentation()"><i class="fa-solid fa-play"></i> スライドを最初から自動再生</button>
+        <button class="panel-btn stop-btn" style="display:none;" id="stop-panel-btn" onclick="stopPresentation()"><i class="fa-solid fa-stop"></i> 再生を停止</button>
+        <span class="status-text" id="status-display">停止中（ボタンを押すとナレーションが始まります）</span>
+    </div>
+
+    <div class="slide-deck">
+
+        <div class="slide-card" id="slide-0">
+            <div class="slide-body title-slide">
+                <div class="badge">行政システム構築の一考察</div>
+                <h1>行政の縮小化とそれを担保するための民間組織や<br>行政書士を参画させた行政システムの構築の一考察</h1>
+                <h2>〜「小さな政府」ではなく「賢い政府（Smart Government）」へ〜</h2>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 1)</div>
+                    <p class="text-to-speak">皆さん、こんにちは。杉澤です。本日ここで話す内容には「何を言っているんだ！」「おかしいじゃないの？」という意見が出るのも当然ですが、私が組合に入った時に期待していたことです。もちろんどのようにアプローチするかは今後の課題ですが、今後の私たちのテーマの一つになればと思い提案します。どうぞよろしくお願いします。今日のお話は、もしかすると少し変わった話に聞こえるかもしれません。「行政の縮小化」という言葉だけを聞くと、行政サービスを減らすのか？公務員を減らすのか？そんな印象を持たれる方もいると思います。しかし私がお話ししたいのは、行政を弱くする話ではありません。人口減少社会の中で、行政サービスを維持するために、どうすればより賢い仕組みにできるのか。その一つの提案として聞いていただければと思います。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-card" id="slide-1">
+            <div class="slide-header">
+                <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
+                <div class="slide-number">02 / 12</div>
+            </div>
+            <div class="slide-body">
+                <div class="slide-title">【原体験】現場、教育、企画の立場を経験して</div>
+                <div class="grid-2">
+                    <div class="card-light">
+                        <h3><i class="fa-solid fa-fire-extinguisher highlight"></i> 消防救急の現場での長いキャリア</h3>
+                        <ul>
+                            <li><i class="fa-solid fa-circle-check"></i> 現場の最前線から、人を育てる教育、組織を動かす企画まで経験</li>
+                            <li><i class="fa-solid fa-circle-check"></i> 職務に全力を尽くす中で見えてきた、行政組織の構造的な課題</li>
+                        </ul>
+                    </div>
+                    <div class="card-dark">
+                        <h3><i class="fa-solid fa-quote-left highlight"></i> 忘れられない上司の言葉</h3>
+                        <p style="font-size: 20px; font-style: italic; line-height: 1.6; margin-top: 15px;">
+                            「仕事を選ぶな。これが俺たちの食いぶちになるんだから」
+                        </p>
+                        <p style="color: #94a3b8; margin-top: 20px; font-size: 15px;">当時：なるほど組織を守るとはこういうことかと実感した<br>現在：これからの少子高齢・人口減少社会において別の見方をすべきではないか</p>
+                    </div>
+                </div>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 2)</div>
+                    <p class="text-to-speak">私は消防救急の現場で長く仕事をしてきました。現場、教育、企画、さまざまな立場を経験しました。その中で忘れられない言葉があります。上司から言われた「仕事を選ぶな。これが俺たちの食いぶちになるんだから」という言葉です。当時の私は、なるほど組織を守るとはこういうことかと感じました。しかし今振り返ると、別の見方もできるのではないかと思うようになりました。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-card" id="slide-2">
+            <div class="slide-header">
+                <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
+                <div class="slide-number">03 / 12</div>
+            </div>
+            <div class="slide-body">
+                <div class="slide-title">【組織のリアル】行政組織は「生き物」である</div>
+                <div class="grid-2">
+                    <div class="card-light">
+                        <h3><i class="fa-solid fa-dna highlight"></i> 組織が持つ自然な自己維持力</h3>
+                        <ul>
+                            <li><i class="fa-solid fa-circle-notch" style="color: #10b981;"></i> 行政職員への批判ではなく、組織の持つ普遍的な「性（さが）」</li>
+                            <li><i class="fa-solid fa-circle-notch" style="color: #10b981;"></i> 企業でも団体でも、一度生まれた組織は自己を維持しようとする</li>
+                        </ul>
+                    </div>
+                    <div class="card-emerald">
+                        <h3><i class="fa-solid fa-building-shield highlight"></i> 業務を手放せなくなる構造</h3>
+                        <ul>
+                            <li><i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i> 必要性が薄れた業務であっても、組織の維持が優先されがち</li>
+                            <li><i class="fa-solid fa-circle-check"></i> この構造から脱却するために「外からの新しい目線と仕組み」が必要</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 3)</div>
+                    <p class="text-to-speak">行政職員の皆さんを批判したいわけではありません。私自身その中にいました。だからこそ感じるのですが、組織というものは、自然と自分を維持しようとする力を持っています。これは行政に限らず、企業でも団体でも同じです。結果として、必要性が薄れた業務でも、なかなか手放せなくなることがあります。私はこれを、行政組織は生き物である、という表現で考えています。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-card" id="slide-3">
+            <div class="slide-header">
+                <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
+                <div class="slide-number">04 / 12</div>
+            </div>
+            <div class="slide-body">
+                <div class="slide-title">【人口減少社会】本質は「行政がどう変化するか」</div>
+                <div class="card-dark" style="margin-bottom: 30px;">
+                    <span style="color: #10b981; font-weight: bold; font-size: 14px;">東北学院大学 先生の知見より</span>
+                    <p style="font-size: 26px; font-weight: 700; margin-top: 10px; line-height: 1.4;">
+                        「人口減少自体が問題なのではない。<br>問題は、その中で<span class="highlight">行政がどう変化するか</span>だ」
+                    </p>
+                </div>
+                <div class="grid-2">
+                    <div class="card-light">
+                        <h3>避けて通れない現実</h3>
+                        <p style="font-size: 16px; line-height: 1.6;">日本の人口は確実に減少し、それに伴って地域の税収も減少していく。旧来の仕組みのままで生き残ることはできない。</p>
+                    </div>
+                    <div class="card-emerald">
+                        <h3>負担の集中を防ぐための変革</h3>
+                        <p style="font-size: 16px; line-height: 1.6;">行政の仕組み自体が変わらなければ、残された少数の現役世代や、社会の弱い部分にすべての負担が集中してしまうという危機感。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 4)</div>
+                    <p class="text-to-speak">昨年、東北学院大学の先生のお話を聞く機会がありました。その中で非常に印象的だったのが、人口減少自体が問題なのではない。問題は、その中で行政がどう変化するかだ。という言葉でした。私はこの言葉に大きな衝撃を受けました。確かに人口は減ります。税収も減ります。しかし仕組みが変わらなければ、その負担はどこかに集中してしまいます。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-card" id="slide-4">
+            <div class="slide-header">
+                <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
+                <div class="slide-number">05 / 12</div>
+            </div>
+            <div class="slide-body">
+                <div class="slide-title">【百姓という考え方】これからの社会に必要な「多能工」</div>
+                <div class="big-text" style="margin-bottom: 30px; text-align: left; font-size: 22px;">
+                    私のルーツである農家、そして「百姓」という言葉の意味。<br>それは、<span class="highlight">「百の仕事、百の社会的役割を柔軟にこなす人」</span>である。
+                </div>
+                <div class="grid-2">
+                    <div class="card-light">
+                        <h3>歴史に学ぶ多能工の知恵</h3>
+                        <ul>
+                            <li><i class="fa-solid fa-wheat-awn"></i> 田んぼを作るだけでなく、大工仕事もこなす</li>
+                            <li><i class="fa-solid fa-wrench"></i> 道具の修理をし、地域の役職も率先して務める</li>
+                        </ul>
+                    </div>
+                    <div class="card-dark">
+                        <h3>現代社会への応用</h3>
+                        <ul>
+                            <li><i class="fa-solid fa-circle-check"></i> 人口減少下では、1人が1つの専門性（単能工）に閉じこもるリスク</li>
+                            <li><i class="fa-solid fa-circle-check"></i> 複数の社会の役割をスイッチできる「百姓の知恵」が求められる</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 5)</div>
+                    <p class="text-to-speak">私は農家の出身です。昔の百姓という言葉には、百の仕事をする人という意味があったそうです。田んぼだけではありません。大工もする。修理もする。地域の役もする。つまり多能工です。私はこれからの社会に必要なのは、この多能工の考え方ではないかと思っています。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-card" id="slide-5">
+            <div class="slide-header">
+                <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
+                <div class="slide-number">06 / 12</div>
+            </div>
+            <div class="slide-body">
+                <div class="slide-title">【行政書士という多能工】行政を支える広範な可能性</div>
+                <div class="grid-3">
+                    <div class="card-light">
+                        <h3 style="text-align:center;"><i class="fa-solid fa-file-signature highlight"></i> 許認可・法務</h3>
+                        <p style="font-size:14px; line-height:1.5; color:#475569;">従来の強みである複雑な行政手続き、法律書類の作成を通じた確かな法的基盤の提供。</p>
+                    </div>
+                    <div class="card-light">
+                        <h3 style="text-align:center;"><i class="fa-solid fa-handshake-angle highlight"></i> 福祉・防災</h3>
+                        <p style="font-size:14px; line-height:1.5; color:#475569;">高齢化社会を支える成年後見や福祉事務、地域を守る防災計画の策定への寄与。</p>
+                    </div>
+                    <div class="card-emerald">
+                        <h3 style="text-align:center;"><i class="fa-solid fa-users-gear highlight"></i> 地域・事業支援</h3>
+                        <p style="font-size:14px; line-height:1.5; color:#1f2937;">地方創生、コミュニティづくり、民間企業の事業継続（BCP）など、多角的な支援を展開。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 6)</div>
+                    <p class="text-to-speak">私たち行政書士は、実は現代の多能工になれる存在です。許認可だけではありません。福祉も。防災も。地域づくりも。事業支援も。さまざまな分野に関わることができます。だからこそ、行政の一部を支える力になれる可能性があります。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-card" id="slide-6">
+            <div class="slide-header">
+                <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
+                <div class="slide-number">07 / 12</div>
+            </div>
+            <div class="slide-body">
+                <div class="slide-title">【固定費から変動費へ】柔軟で伸縮自在なシステムへ</div>
+                <div class="grid-2">
+                    <div class="card-light">
+                        <h3>行政最大のジレンマ：固定費化</h3>
+                        <ul>
+                            <li><i class="fa-solid fa-triangle-exclamation" style="color: #f59e0b;"></i> 一度組織や公務員の定員を決定すると、状況の変化に対応しにくい</li>
+                            <li><i class="fa-solid fa-triangle-exclamation" style="color: #f59e0b;"></i> 需要が減少しても、簡単には維持コストを下げられない構造</li>
+                        </ul>
+                    </div>
+                    <div class="card-dark">
+                        <h3>民間連携による「弾力性」の確保</h3>
+                        <ul>
+                            <li><i class="fa-solid fa-bolt" style="color: #10b981;"></i> 必要な時期に、必要な分だけリソースを稼働させる仕組み</li>
+                            <li><i class="fa-solid fa-bolt" style="color: #10b981;"></i> 社会や住民ニーズの大きさに応じて大きさを変えられる「伸縮性」</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 7)</div>
+                    <p class="text-to-speak">行政が抱える大きな課題は、固定費です。一度組織を作ると、簡単には変えられません。しかし人口減少社会では、社会の変化に応じて、柔軟に大きさを変えられる仕組みが必要です。私はその一部を、民間との連携で実現できるのではないかと考えています。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-card" id="slide-7">
+            <div class="slide-header">
+                <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
+                <div class="slide-number">08 / 12</div>
+            </div>
+            <div class="slide-body">
+                <div class="slide-title">【なぜ組合か】組織としての信用、品質、体制の担保</div>
+                <div class="grid-2">
+                    <div class="card-light">
+                        <h3>個人受託の限界を越える</h3>
+                        <p style="font-size:16px; line-height:1.6; color:#475569;">個人のリソースやマンパワーだけでは、行政の大規模な業務シフトを受け入れることが難しい。</p>
+                    </div>
+                    <div class="card-emerald">
+                        <h3>「組合」がもたらす組織力</h3>
+                        <ul>
+                            <li><i class="fa-solid fa-shield"></i> <strong style="color:#0f172a;">品質管理：</strong> 組合全体でのスキルの標準化と担保</li>
+                            <li><i class="fa-solid fa-shield"></i> <strong style="color:#0f172a;">責任体制：</strong> 組織としての強固な信頼関係の構築</li>
+                            <li><i class="fa-solid fa-shield"></i> <strong style="color:#0f172a;">継続性：</strong> 万が一の際もカバーし合えるバックアップ体制</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 8)</div>
+                    <p class="text-to-speak">個人では限界があります。しかし組合なら、組織として受けることができます。品質管理もできます。責任体制も作れます。そして行政との信頼関係も構築できます。私は行政書士組合には、大きな可能性を持っていると思っています。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-card" id="slide-8">
+            <div class="slide-header">
+                <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
+                <div class="slide-number">09 / 12</div>
+            </div>
+            <div class="slide-body">
+                <div class="slide-title">【准救急システム】奪うのではなく、支え補完する</div>
+                <div class="card-light" style="border-left: 6px solid #10b981; margin-bottom: 25px;">
+                    <h3>行政と民間のベストミックス</h3>
+                    <p style="font-size: 16px; margin-top: 5px; color: #475569;">公助（消防救急など）が限界を迎える前に、民間が担える中間領域を切り出してサポートする実証的思想。</p>
+                </div>
+                <div class="grid-2">
+                    <div class="card-dark">
+                        <h3>「支え・補完する」というアプローチ</h3>
+                        <p style="font-size: 15px; color: #cbd5e1; line-height: 1.6;">行政の権限や仕事を奪うのが目的ではない。行政の手が回らなくなった部分に、民間が適切なセーフティネットを張る仕組み。</p>
+                    </div>
+                    <div class="card-emerald">
+                        <h3>あらゆる行政分野への水平展開</h3>
+                        <p style="font-size: 15px; line-height: 1.6;">この思想は救急医療分野に留まらず、窓口事務の一次審査、福祉の巡回、災害対策などあらゆる行政事務に応用が可能。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 9)</div>
+                    <p class="text-to-speak">私が取り組んでいる准救急システムも、考え方は同じです。行政ができなくなった部分を奪うのではなく、支える。補完する。その仕組みを作る。私はこの考え方は、他の行政分野にも応用できると思っています。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-card" id="slide-9">
+            <div class="slide-header">
+                <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
+                <div class="slide-number">10 / 12</div>
+            </div>
+            <div class="slide-body">
+                <div class="slide-title">持続可能な社会を創る「三方よし」の構図</div>
+                <div class="grid-3">
+                    <div class="card-dark" style="text-align: center;">
+                        <i class="fa-solid fa-building" style="font-size: 40px; color: #10b981; margin-bottom: 15px;"></i>
+                        <h3>行政</h3>
+                        <p style="font-size: 14px; color: #cbd5e1; line-height: 1.5;">固定人件費の膨張を抑え、本当に守るべきコア業務に資源を集中してスマート化できる。</p>
+                    </div>
+                    <div class="card-emerald" style="text-align: center;">
+                        <i class="fa-solid fa-users" style="font-size: 40px; color: #0f172a; margin-bottom: 15px;"></i>
+                        <h3>市民</h3>
+                        <p style="font-size: 14px; line-height: 1.5;">人口減少下でも地域サービスが維持され、民間専門家のノウハウによる丁寧な対応を受けられる。</p>
+                    </div>
+                    <div class="card-light" style="text-align: center; border-left: none; border-top: 4px solid #0f172a;">
+                        <i class="fa-solid fa-briefcase" style="font-size: 40px; color: #0f172a; margin-bottom: 15px;"></i>
+                        <h3>民間（行政書士組合）</h3>
+                        <p style="font-size: 14px; line-height: 1.5;">「待つ」だけの営業から脱却し、地域社会のインフラを自ら支える新しい職域と市場を創出できる。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 10)</div>
+                    <p class="text-to-speak">この仕組みが実現すると、行政だけが得をするわけではありません。市民も。民間も。それぞれにメリットがあります。まさに三方よしです。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-card" id="slide-10">
+            <div class="slide-header">
+                <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
+                <div class="slide-number">11 / 12</div>
+            </div>
+            <div class="slide-body">
+                <div class="slide-title">【ロードマップ】まずは小さな成功事例を作ることから</div>
+                <div class="grid-2">
+                    <div class="card-light">
+                        <h3>長期的ビジョンと準備の必要性</h3>
+                        <p style="font-size: 15px; line-height: 1.5; color: #475569;">一朝一夕にすべてを民間に切り替えることは不可能。しかし、10年後、20年後の破綻を防ぐために、今から仕掛けを動かさなければ間に合わない。</p>
+                    </div>
+                    <div class="card-emerald">
+                        <h3>スモールスタートの重要性</h3>
+                        <p style="font-size: 15px; line-height: 1.5;">最初から巨大なシステムを狙うのではなく、特定の自治体や特定の業務パッケージにおいて「信頼に足る成功事例」を一つずつ着実に積み上げる。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 11)</div>
+                    <p class="text-to-speak">私は明日からすぐに実現できるとは思っていません。しかし、今から準備しなければ、10年後、20年後には間に合わないかもしれません。だからこそ、まずは小さな成功事例を作る。そこから始めることが大切だと思っています。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-card" id="slide-11">
+            <div class="slide-header">
+                <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
+                <div class="slide-number">12 / 12</div>
+            </div>
+            <div class="slide-body" style="text-align: center; align-items: center;">
+                <div class="slide-title" style="border: none; padding: 0; text-align: center; font-size: 42px;">
+                    行政と民間が力を合わせる「新しい時代」へ
+                </div>
+                <hr style="width: 60%; margin: 20px auto; border: 0; border-top: 1px solid #cbd5e1;">
+                <div class="big-text" style="max-width: 800px; margin-bottom: 20px;">
+                    行政サービスの否定ではなく、「守るための再構築」。<br>私たち行政書士は、その架け橋になれる存在。
+                </div>
+                <p style="font-size: 22px; color: #10b981; font-weight: bold;">今後の私たちのテーマの一つとして、ぜひ一緒に考えていきましょう。</p>
+            </div>
+            <div class="presenter-notes">
+                <div class="notes-content">
+                    <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 12)</div>
+                    <p class="text-to-speak">最後になります。行政を否定したいわけではありません。むしろ行政サービスを守りたいのです。そのためには、行政だけで頑張る時代ではなく、行政と民間が力を合わせる時代になると思っています。私たち行政書士は、その橋渡し役になれる存在ではないでしょうか。今日は私の一つの提案として、聞いていただければ幸いです。ご清聴ありがとうございました。</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        let isPlaying = false;
+        let currentUtterance = null;
+        const totalSlides = 12;
+
+        function startAutoPresentation() {
+            isPlaying = true;
+            currentSlideIndex = 0;
+            
+            document.getElementById('start-panel-btn').style.display = 'none';
+            document.getElementById('stop-panel-btn').style.display = 'block';
+            
+            playSlide(currentSlideIndex);
+        }
+
+        function playSlide(index) {
+            if (!isPlaying || index >= totalSlides) {
+                stopPresentation();
+                return;
+            }
+
+            // 全てのスライドのハイライトを消す
+            for (let i = 0; i < totalSlides; i++) {
+                document.getElementById(`slide-${i}`).classList.remove('playing-now');
+            }
+
+            // 現在のスライドをハイライト＆スクロール
+            const targetSlide = document.getElementById(`slide-${index}`);
+            targetSlide.classList.add('playing-now');
+            targetSlide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // ステータス表示の更新
+            document.getElementById('status-display').innerText = `【自動再生中】 スライド ${index + 1} / ${totalSlides} 枚目を読み上げています...`;
+
+            // テキスト読み上げ設定
+            const text = targetSlide.querySelector('.text-to-speak').innerText;
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.lang = 'ja-JP';
+            
+            // 💡 スピードの初期値を「1.4（早口）」に調整しています。
+            currentUtterance.rate = 1.6; 
+
+            // 💡 デバイス内の日本語「男性の声」を優先的に指定する処理
+            if (window.speechSynthesis) {
+                const voices = window.speechSynthesis.getVoices();
+                const maleVoice = voices.find(voice => 
+                    voice.lang.startsWith('ja') && 
+                    (voice.name.toLowerCase().includes('ichiro') || voice.name.toLowerCase().includes('male'))
+                ) || voices.find(voice => voice.lang.startsWith('ja'));
+                
+                if (maleVoice) {
+                    currentUtterance.voice = maleVoice;
+                }
+            }
+
+            // 読み上げ終了時の処理（自動で次へ）
+            currentUtterance.onend = function() {
+                if (isPlaying) {
+                    currentSlideIndex++;
+                    setTimeout(() => {
+                        playSlide(currentSlideIndex);
+                    }, 1000); // スライド間の余韻を1秒に設定
+                }
+            };
+
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        function stopPresentation() {
+            isPlaying = false;
+            speechSynthesis.cancel();
+            
+            // ハイライト消去
+            for (let i = 0; i < totalSlides; i++) {
+                document.getElementById(`slide-${i}`).classList.remove('playing-now');
+            }
+            
+            document.getElementById('start-panel-btn').style.display = 'block';
+            document.getElementById('stop-panel-btn').style.display = 'none';
+            document.getElementById('status-display').innerText = "停止中（ボタンを押すとナレーションが始まります）";
+        }
+
+        // ページ読み込み時に音声を初期化
+        if (window.speechSynthesis) {
+            window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = function() {
+                window.speechSynthesis.getVoices();
+            };
+        }
+    </script>
+
+</body>
+</html>
