@@ -2,1452 +2,620 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ネプトジャパン 組合再編説明会</title>
+    <!-- CSSフレームワーク (Tailwind CSS) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PowerPoint生成ライブラリ (PptxGenJS) -->
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <style>
-        @page {
-            size: A4 landscape;
-            margin: 12mm 15mm;
-            background-color: #f4f6f9;
-        }
-        * {
-            box-sizing: border-box;
-        }
         body {
-            margin: 0;
-            padding: 0;
             font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-            color: #2c3e50;
-            background-color: #f4f6f9;
-            font-size: 14pt;
-            line-height: 1.5;
-        }
-        .slide {
-            page-break-after: always;
-            position: relative;
-            background-color: #ffffff;
-            border-radius: 6px;
-            padding: 25px 35px;
-            margin-bottom: 30px;
-            height: 180mm; /* approximate matching landscape A4 print container */
-            border-top: 6px solid #1a365d;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .slide:last-child {
-            page-break-after: avoid;
-        }
-        .slide-header {
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        .slide-title {
-            font-size: 24pt;
-            color: #1a365d;
-            margin: 0;
-            font-weight: bold;
-        }
-        .slide-content {
-            margin-top: 15px;
-        }
-        /* Layout Tables instead of flex/grid */
-        .layout-table {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-            margin-top: 15px;
-        }
-        .layout-row {
-            display: table-row;
-        }
-        .layout-cell {
-            display: table-cell;
-            vertical-align: top;
-            padding: 10px;
-        }
-        .w-50 { width: 50%; }
-        .w-33 { width: 33.33%; }
-        .w-60 { width: 60%; }
-        .w-40 { width: 40%; }
-        
-        /* Styled boxes */
-        .card {
             background-color: #f8fafc;
-            border-left: 4px solid #2b6cb0;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 0 4px 4px 0;
         }
-        .card-alert {
-            background-color: #fff5f5;
-            border-left: 4px solid #c53030;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 0 4px 4px 0;
+        .slide-container {
+            min-height: 520px;
         }
-        .card-success {
-            background-color: #f0fff4;
-            border-left: 4px solid #2f855a;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 0 4px 4px 0;
+        /* スライド内のテキストサイズを特大に補正 */
+        .slide-content text, .slide-content p, .slide-content li {
+            font-size: 1.55rem;
+            line-height: 1.8;
         }
-        .card-title {
-            font-weight: bold;
-            color: #2d3748;
-            margin-bottom: 8px;
-            font-size: 16pt;
+        .slide-content h3 {
+            font-size: 2.3rem;
         }
-        
-        ul, ol {
-            margin: 0 0 10px 20px;
-            padding: 0;
+        /* スクロールバーのカスタマイズ */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        li {
-            margin-bottom: 8px;
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
         }
-        
-        /* Title Slide Customization */
-        .title-slide {
-            text-align: center;
-            border-top: 12px solid #1a365d;
-            background-color: #1a365d;
-            color: #ffffff;
-        }
-        .title-slide .main-title {
-            font-size: 36pt;
-            margin-top: 25mm;
-            font-weight: bold;
-            color: #ffffff;
-        }
-        .title-slide .sub-title {
-            font-size: 20pt;
-            margin-top: 15px;
-            color: #90cdf4;
-        }
-        .title-slide .footer {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-            left: 0;
-            font-size: 14pt;
-            color: #cbd5e0;
-            text-align: center;
-        }
-        
-        .footer-text {
-            position: absolute;
-            bottom: 15px;
-            right: 35px;
-            font-size: 10pt;
-            color: #a0aec0;
-        }
-        .badge {
-            display: inline-block;
-            background-color: #2b6cb0;
-            color: white;
-            padding: 3px 10px;
-            font-size: 11pt;
-            border-radius: 12px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .arrow {
-            text-align: center;
-            font-size: 24pt;
-            color: #4a5568;
-            margin: 10px 0;
-        }
-
-        /* Subtitle synced area inside the slide for presentation */
-        .subtitle-bar {
-            background-color: #ebf8ff;
-            border-left: 6px solid #2b6cb0;
-            padding: 15px;
-            margin-top: 25px;
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
             border-radius: 4px;
-        }
-        .subtitle-heading {
-            font-size: 11pt;
-            color: #2b6cb0;
-            font-weight: bold;
-            margin-bottom: 5px;
-            letter-spacing: 0.1em;
-        }
-        .subtitle-text {
-            font-size: 13.5pt;
-            font-weight: bold;
-            color: #1a202c;
-            line-height: 1.6;
-        }
-
-        /* Control Panel styles */
-        .control-panel {
-            background-color: #1a365d;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 0 0 6px 6px;
-            margin-top: -30px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .control-btn {
-            background-color: #2b6cb0;
-            color: white;
-            border: none;
-            padding: 6px 15px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 11pt;
-            transition: background 0.2s;
-        }
-        .control-btn:hover {
-            background-color: #2b4c7e;
-        }
-        .select-ctrl, .checkbox-ctrl {
-            font-size: 11pt;
-            font-weight: bold;
-            color: #2c3e50;
-            background: white;
-            border-radius: 4px;
-            padding: 3px 8px;
-            border: none;
-        }
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11pt;
-            font-weight: bold;
-        }
-        .navigation-controls {
-            display: flex;
-            gap: 10px;
         }
     </style>
-    <!-- PowerPoint Generation Library (PptxGenJS) -->
-    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 </head>
-<body>
+<body class="text-slate-800 antialiased flex flex-col min-h-screen">
 
-    <!-- Slide 1 -->
-    <div class="slide title-slide" id="slide-1">
-        <div class="main-title">ネプトジャパンの未来について</div>
-        <div class="sub-title">組合再編説明会資料</div>
-        <div class="footer">一般社団法人 日本移送医療システム 代表理事 杉澤修</div>
-        <div class="footer-text" style="display:none;">1</div>
-    </div>
-    <!-- Control 1 -->
-    <div class="control-panel" id="control-1">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(1)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-1" checked>
-                <label for="auto-play-1">音声の自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-1" checked>
-                <label for="auto-advance-1">自動ページ送り</label>
-            </div>
-            <div>
-                <label for="speed-1" style="font-size:11pt; font-weight:bold;">速度:</label>
-                <select id="speed-1" class="select-ctrl" onchange="updateSpeed(1)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
+    <!-- ヘッダーエリア -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-wrap justify-between items-center shadow-sm z-10">
+        <div>
+            <h1 class="text-2xl font-bold text-blue-900 tracking-tight">ネプトジャパン 組合再編説明会</h1>
+            <p class="text-sm text-slate-500 font-medium">一般社団法人日本移送医療システム 杉澤 修</p>
         </div>
-        <div class="navigation-controls">
-            <button class="control-btn" style="background-color:#4a5568;" onclick="exportToPowerPoint()">🖥️ パワポ書き出し (.pptx)</button>
-            <button class="control-btn" onclick="scrollToSlide(2)">次へ ▶</button>
+        
+        <!-- コントロールパネル -->
+        <div class="flex flex-wrap items-center gap-4 mt-3 lg:mt-0">
+            <!-- 音声コントロールエリア -->
+            <div class="bg-slate-50 p-2 rounded-xl flex flex-wrap items-center gap-3 border border-slate-200">
+                <button id="btn-play" onclick="toggleSpeech()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition flex items-center gap-1.5">
+                    <span id="icon-play">🔊</span> <span id="text-play">音声再生</span>
+                </button>
+                <button onclick="stopSpeech()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold transition">
+                    ⏹ 停止
+                </button>
+                <!-- 速度選択 -->
+                <div class="flex items-center gap-1.5 text-xs text-slate-600 px-1 border-l border-slate-200 pl-3">
+                    <label for="speed-ctrl" class="font-bold">速度:</label>
+                    <select id="speed-ctrl" onchange="updateSpeed()" class="bg-white border border-slate-300 rounded-md px-1.5 py-1 font-bold text-blue-900 shadow-sm">
+                        <option value="1.0">標準</option>
+                        <option value="1.2" selected>少し早口</option>
+                        <option value="1.4">早口</option>
+                    </select>
+                </div>
+                <!-- 各種チェックボックス -->
+                <div class="flex items-center gap-3 border-l border-slate-200 pl-3 text-xs text-slate-600 font-bold">
+                    <label class="flex items-center gap-1 cursor-pointer">
+                        <input type="checkbox" id="auto-play" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span>自動再生</span>
+                    </label>
+                    <label class="flex items-center gap-1 cursor-pointer">
+                        <input type="checkbox" id="auto-advance" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span>自動ページ送り</span>
+                    </label>
+                </div>
+            </div>
+            <!-- パワーポイントエクスポート -->
+            <button onclick="exportToPowerPoint()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md transition flex items-center gap-1.5">
+                <span>🖥️</span> パワポ書き出し (.pptx)
+            </button>
         </div>
-    </div>
+    </header>
 
-    <!-- Slide 2 -->
-    <div class="slide" id="slide-2">
-        <div class="slide-header">
-            <div class="slide-title">1. 本日の目的</div>
-        </div>
-        <div class="slide-content">
-            <div style="font-size: 18pt; margin-bottom: 15px; text-align: center; font-weight: bold; color: #2c3e50; padding: 15px; background-color: #f8fafc; border-radius: 6px;">
-                ネプトの将来・現在の課題・再編案について意見交換を行います。
-            </div>
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-50">
-                        <div class="card">
-                            <div class="card-title">● 現状への危機感の共有</div>
-                            <div>現在の組織規模がもたらす限界と、自律的な活動費が残らない構造的課題を正しく把握する。</div>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-50">
-                        <div class="card">
-                            <div class="card-title">● 未来への方向性の合意</div>
-                            <div>大切なブランドと皆さんの絆を守りながら、個社の直接負担を減らす「組合再編」の解決策を提示。</div>
-                        </div>
+    <!-- メインビュー -->
+    <main class="flex-1 flex flex-col lg:flex-row p-6 gap-6 max-w-7xl w-full mx-auto">
+        <!-- 左側：明るくクリアなスライド表示エリア（特大フォント・ライトテーマ） -->
+        <div class="flex-1 flex flex-col">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-md p-8 lg:p-10 flex flex-col justify-between slide-container relative overflow-hidden flex-1">
+                <!-- スライド上部のアライアンスグラデーションライン -->
+                <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-700"></div>
+                
+                <!-- スライドタイトルヘッダー -->
+                <div class="border-b border-slate-100 pb-5 mb-6">
+                    <h2 id="slide-title" class="text-3xl lg:text-4xl font-extrabold text-blue-950 tracking-tight">スライドタイトル</h2>
+                </div>
+
+                <!-- スライドコンテンツ本体 -->
+                <div id="slide-body" class="slide-content flex-1 text-slate-800 font-medium flex flex-col justify-center py-6">
+                    <!-- JavaScriptから動的にコンテンツが挿入されます -->
+                </div>
+
+                <!-- スライドフッター（ページ番号 ＆ 操作ボタン） -->
+                <div class="flex justify-between items-center border-t border-slate-100 pt-5 mt-6">
+                    <span id="slide-counter" class="text-sm font-black text-slate-400 tracking-widest">PAGE 1 / 17</span>
+                    <div class="flex gap-3">
+                        <button onclick="prevSlide()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold border border-slate-200 transition">
+                            ◀ 前へ
+                        </button>
+                        <button onclick="nextSlide()" class="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2.5 rounded-xl font-bold shadow-sm transition">
+                            次へ ▶
+                        </button>
                     </div>
                 </div>
             </div>
-            <!-- Dynamic Synced Subtitle -->
-            <div class="subtitle-bar">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-2">本日の目的は、私が率先して立ち上げた組合構想の魂を守りつつ、直面している課題を解決し、ネプトを未来へとつなぐための再編案について意見交換を行うことです。現状の課題を共有し、どうすれば会員の皆様の負担を減らし、活動をより実質的なものにできるか、前向きな解決策を提示します。</div>
-            </div>
         </div>
-        <div class="footer-text">2 / 15</div>
-    </div>
-    <!-- Control 2 -->
-    <div class="control-panel" id="control-2">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(2)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-2" checked>
-                <label for="auto-play-2">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-2" checked>
-                <label for="auto-advance-2">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-2" class="select-ctrl" onchange="updateSpeed(2)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(1)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(3)">次へ ▶</button>
-        </div>
-    </div>
 
-    <!-- Slide 3 -->
-    <div class="slide" id="slide-3">
-        <div class="slide-header">
-            <div class="slide-title">2. ネプトジャパン設立の目的</div>
-        </div>
-        <div class="slide-content">
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-33">
-                        <div class="card">
-                            <div class="badge">組織力</div>
-                            <div class="card-title">民間救急事業者の連携</div>
-                            <div>事業者同士が手を取り合い、強固なネットワークを構築する。</div>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-33">
-                        <div class="card">
-                            <div class="badge">経済</div>
-                            <div class="card-title">共同受注の推進</div>
-                            <div>一社では対応しきれない広域・大型案件を組織で受託する。</div>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-33">
-                        <div class="card">
-                            <div class="badge">標準化</div>
-                            <div class="card-title">技術標準化</div>
-                            <div>搬送技術・安全基準を統一し、高品質なサービスを担保。</div>
-                        </div>
+        <!-- 右側：字幕（スピーチ原稿・プロンプター）エリア -->
+        <div class="w-full lg:w-96 flex flex-col">
+            <div class="bg-indigo-50/70 border border-indigo-100 rounded-2xl shadow-md p-6 flex flex-col h-full">
+                <div class="flex justify-between items-center border-b border-indigo-200 pb-3 mb-4">
+                    <h3 class="font-extrabold text-blue-950 flex items-center gap-1.5 text-base">
+                        <span>🎙️</span> スピーチ原稿（字幕）
+                    </h3>
+                    <!-- 字幕サイズ調整 -->
+                    <div class="flex gap-1.5">
+                        <button onclick="adjustTextSize(1)" class="bg-white hover:bg-slate-50 text-slate-700 text-xs px-2 py-1 rounded-md border border-slate-300 font-bold shadow-sm">A+</button>
+                        <button onclick="adjustTextSize(-1)" class="bg-white hover:bg-slate-50 text-slate-700 text-xs px-2 py-1 rounded-md border border-slate-300 font-bold shadow-sm">A-</button>
                     </div>
                 </div>
-            </div>
-            <p class="text-center font-bold text-blue-900 mt-2 text-base">
-                🚀 設立の大きな目的：準救急制度の推進、情報共有、行政への提言
-            </p>
-            <div class="subtitle-bar">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-3">ネプトジャパンを設立した目的は、民間救急事業者が力を合わせ、一社ではできないことを実現するためでした。情報共有、共同受注、技術向上、行政への提言、準救急制度の推進。これらが目的でした。そして、その目的は今も変わっていません。</div>
-            </div>
-        </div>
-        <div class="footer-text">3 / 15</div>
-    </div>
-    <!-- Control 3 -->
-    <div class="control-panel" id="control-3">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(3)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-3" checked>
-                <label for="auto-play-3">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-3" checked>
-                <label for="auto-advance-3">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-3" class="select-ctrl" onchange="updateSpeed(3)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(2)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(4)">次へ ▶</button>
-        </div>
-    </div>
-
-    <!-- Slide 4 -->
-    <div class="slide" id="slide-4">
-        <div class="slide-header">
-            <div class="slide-title">3. これまでの成果</div>
-        </div>
-        <div class="slide-content">
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-50">
-                        <div class="card-success">
-                            <div class="card-title">■ インフラの構築</div>
-                            <ul>
-                                <li><strong>事業者間ネットワーク形成：</strong> 顔の見える関係性の構築</li>
-                                <li><strong>情報共有の活発化：</strong> 業界動向やノウハウの共有</li>
-                                <li><strong>相互応援体制：</strong> 緊急時や重なり案件での協力実績</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-50">
-                        <div class="card-success">
-                            <div class="card-title">■ 社会的アプローチ</div>
-                            <ul>
-                                <li><strong>行政への提言活動：</strong> 民間救急の必要性を訴求</li>
-                                <li><strong>準救急構想の検討：</strong> 医療と搬送を繋ぐ新しい枠組みの設計着手</li>
-                            </ul>
-                        </div>
-                    </div>
+                <!-- 杉澤修スピーチ字幕（動的スクロール連動） -->
+                <div id="subtitle-box" class="flex-1 overflow-y-auto text-slate-800 font-semibold leading-relaxed whitespace-pre-wrap pr-1" style="font-size: 1.25rem; max-height: 460px;">
+                    <!-- スピーチの字幕文言が動的に表示されます -->
                 </div>
             </div>
-            <div class="subtitle-bar" style="margin-top:15px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-4">私はまずここを強調したいと思います。ネプトジャパンは失敗した組織ではありません。短期間で、事業者同士のネットワークを作り、相互応援体制を作り、行政との接点もできました。準救急構想も形になってきました。まずはここまで積み上げてきた皆さんの努力に感謝したいと思います。</div>
-            </div>
         </div>
-        <div class="footer-text">4 / 15</div>
-    </div>
-    <!-- Control 4 -->
-    <div class="control-panel" id="control-4">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(4)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-4" checked>
-                <label for="auto-play-4">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-4" checked>
-                <label for="auto-advance-4">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-4" class="select-ctrl" onchange="updateSpeed(4)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(3)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(5)">次へ ▶</button>
-        </div>
-    </div>
+    </main>
 
-    <!-- Slide 5 -->
-    <div class="slide" id="slide-5">
-        <div class="slide-header">
-            <div class="slide-title">4. 現在の課題と将来の不安</div>
-        </div>
-        <div class="slide-content">
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-50">
-                        <div class="card-alert" style="margin-bottom:0;">
-                            <div class="card-title">⚠️ 現在の組織的限界と費用負担</div>
-                            <ul>
-                                <li><strong>法人住民税均等割（全体）：</strong> 年約 8 万円</li>
-                                <li><strong>中央会等負担金（全体）：</strong> 年約 5 万円</li>
-                                <li><strong>自律活動費の枯渇：</strong> 各社が負担している大切な活動費（年会費20,000円）が、これら固定費の支払いで全て遣い切られてしまう。</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-50">
-                        <div class="card-alert" style="margin-bottom:0;">
-                            <div class="card-title">❌ このまま進んだ場合の将来の不安</div>
-                            <ul>
-                                <li><strong>共同受注の停滞：</strong> 専任事務局不在により、事務運営負担が特定社に集中。</li>
-                                <li><strong>行政契約へのアクセスの難しさ：</strong> 単独事業者では審査が通りにくい。</li>
-                                <li><strong>後継体制の欠如：</strong> 次世代が引き継ぎたいと思える環境構築が困難。</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="subtitle-bar" style="margin-top:10px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-5">ここで誤解してほしくないのですが、均等割が高いという話ではありません。現在、組合全体で年間約8万円の均等割があります。しかしそのうち、中央会等への負担が約5万円あります。結果として、集金している活動費、つまり各社が負担している年会費2万円がそのほとんどで遣われてしまい、ネプトジャパン独自の活動に使えるお金が残りません。営業活動やシステム整備を考えると、少し工夫が必要ではないかと思っています。</div>
-            </div>
-        </div>
-        <div class="footer-text">5 / 15</div>
-    </div>
-    <!-- Control 5 -->
-    <div class="control-panel" id="control-5">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(5)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-5" checked>
-                <label for="auto-play-5">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-5" checked>
-                <label for="auto-advance-5">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-5" class="select-ctrl" onchange="updateSpeed(5)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(4)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(6)">次へ ▶</button>
-        </div>
-    </div>
+    <!-- 最下部フッター -->
+    <footer class="bg-slate-900 text-slate-500 text-center py-3 text-xs border-t border-slate-800 font-semibold">
+        &copy; 2026 一般社団法人日本移送医療システム 代表理事 杉澤 修.
+    </footer>
 
-    <!-- Slide 6 -->
-    <div class="slide" id="slide-6">
-        <div class="slide-header">
-            <div class="slide-title">5. 何を守りたいのか</div>
-        </div>
-        <div class="slide-content">
-            <div style="text-align: center; font-size: 18pt; font-weight: bold; color: #1a365d; margin-bottom: 20px;">
-                私たちがこれまで命懸けで育ててきたアセット・志を1つも捨てません。
-            </div>
-            <div class="layout-table" style="background-color: #f8fafc; padding: 20px; border-radius: 6px;">
-                <div class="layout-row">
-                    <div class="layout-cell w-33" style="text-align: center;">
-                        <div style="font-size: 32pt;">🛡️</div>
-                        <div style="font-weight: bold; font-size: 16pt; margin: 10px 0;">理念と名前</div>
-                        <div style="font-size: 12pt; color: #4a5568;">ネプトジャパンの志と名称は継承</div>
-                    </div>
-                    <div class="layout-cell w-33" style="text-align: center; border-left: 1px solid #cbd5e0; border-right: 1px solid #cbd5e0;">
-                        <div style="font-size: 32pt;">🤝</div>
-                        <div style="font-weight: bold; font-size: 16pt; margin: 10px 0;">ネットワーク</div>
-                        <div style="font-size: 12pt; color: #4a5568;">会員同士の確かな信頼関係</div>
-                    </div>
-                    <div class="layout-cell w-33" style="text-align: center;">
-                        <div style="font-size: 32pt;">🚀</div>
-                        <div style="font-weight: bold; font-size: 16pt; margin: 10px 0;">将来の構想</div>
-                        <div style="font-size: 12pt; color: #4a5568;">準救急制度の推進と共同受注</div>
-                    </div>
-                </div>
-            </div>
-            <div class="subtitle-bar" style="margin-top:20px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-6">私は何より、ネプトジャパンの名前を守りたいと思っています。また、会員同士の信頼関係、準救急構想、ネットワーク、これらも守りたい。組織の形が変わるとしても、これらを失うつもりはありません。</div>
-            </div>
-        </div>
-        <div class="footer-text">6 / 15</div>
-    </div>
-    <!-- Control 6 -->
-    <div class="control-panel" id="control-6">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(6)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-6" checked>
-                <label for="auto-play-6">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-6" checked>
-                <label for="auto-advance-6">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-6" class="select-ctrl" onchange="updateSpeed(6)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(5)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(7)">次へ ▶</button>
-        </div>
-    </div>
-
-    <!-- Slide 7 -->
-    <div class="slide" id="slide-7">
-        <div class="slide-header">
-            <div class="slide-title">6. 組合再編案（役割分担）</div>
-        </div>
-        <div class="slide-content">
-            <div style="text-align: center; background-color: #ebf8ff; padding: 15px; border-radius: 6px; font-weight: bold; font-size: 16pt; color: #2b6cb0; margin-bottom: 15px;">
-                実務負担を分担し、双方の強みを活かす新しい再編です
-            </div>
-            
-            <div style="text-align: center; font-weight: bold; font-size: 18pt; color: #1a365d; background-color: #edf2f7; padding: 12px; border-radius: 4px;">
-                一般社団法人 日本移送医療システム（実務・事務手続き、営業・共同受注管理をサポート・分担）
-            </div>
-            <div class="arrow">↔️ (対等なアライアンス)</div>
-            <div style="text-align: center; font-weight: bold; font-size: 18pt; color: #ffffff; background-color: #2b6cb0; padding: 12px; border-radius: 4px; width: 80%; margin: 0 auto;">
-                ネプトジャパン ネットワーク（名称・ブランド・理念の継承）
-            </div>
-
-            <div style="margin-top: 15px; text-align: center; font-weight: bold; color: #2f855a; font-size: 15pt;">
-                ★ ネプトジャパンは残ります！ 「社団一本化」ではなく、役割を分担する対等な提携です。
-            </div>
-            <div class="subtitle-bar" style="margin-top:10px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-7">ここが今日の一番の提案です。社団法人の方が絶対いいということではなく、協同組合としての意思決定やブランド、皆様の絆を守りながら、日本移送医療システムが実務、つまり営業支援、教育研修、共同受注、品質管理などの事務局サポートを担当する。会員事業者はそのサービスを利用する。対等な役割分担をすることで、お互いに軽くなる。そんな形も考えられるのではないかという提案です。</div>
-            </div>
-        </div>
-        <div class="footer-text">7 / 15</div>
-    </div>
-    <!-- Control 7 -->
-    <div class="control-panel" id="control-7">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(7)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-7" checked>
-                <label for="auto-play-7">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-7" checked>
-                <label for="auto-advance-7">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-7" class="select-ctrl" onchange="updateSpeed(7)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(6)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(8)">次へ ▶</button>
-        </div>
-    </div>
-
-    <!-- Slide 8 -->
-    <div class="slide" id="slide-8">
-        <div class="slide-header">
-            <div class="slide-title">7. 会員制度・手数料制度（案）</div>
-        </div>
-        <div class="slide-content">
-            <div style="text-align: center; font-size: 16pt; font-weight: bold; color: #c53030; margin-bottom: 10px;">
-                各事業所の年会費（活動費）負担を「20,000円」から「10,000円」へ引き下げます！
-            </div>
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-50">
-                        <div class="card" style="border-left-color: #1a365d; margin-bottom:0;">
-                            <div class="card-title">💡 新・会員制度（案）</div>
-                            <ul>
-                                <li><strong>種別：</strong> ネプトジャパン 認証会員</li>
-                                <li><strong>年会費：</strong> <span style="font-size: 18pt; color: #c53030; font-weight: bold;">10,000円</span> （従来の20,000円から半減）</li>
-                                <li><strong>権利：</strong> 
-                                    <ul>
-                                        <li>共同受注・行政受託案件への参加資格</li>
-                                        <li>実務に配慮した研修（Web併用）への参加</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-50">
-                        <div class="card" style="border-left-color: #2b6cb0; margin-bottom:0;">
-                            <div class="card-title">📊 手数料制度（受益者負担方式）</div>
-                            <ul>
-                                <li><strong>通常共同受注：</strong> <span style="font-size: 16pt; font-weight: bold;">500円 / 件</span><br><span style="font-size: 11pt; color: #718096; text-indent:0;">仕事が動いた分だけ支払う明朗なシステム</span></li>
-                                <li><strong>法人包括契約案件：</strong> <span style="font-size: 16pt; font-weight: bold;">5% 〜 10%</span><br><span style="font-size: 11pt; color: #718096; text-indent:0;">本部が一括営業・受託した大型案件に適用</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="subtitle-bar" style="margin-top:15px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-8">実質的な会員の年会費負担を、現在の20,000円から半額の「10,000円」へと引き下げます。その代わり、実際に仕事が成立して売上が動いた時だけいただく、公平な「受益者負担方式」の手数料制度を導入します。これにより、仕事がない時に固定費だけが出ていくリスクを完全に解消します。</div>
-            </div>
-        </div>
-        <div class="footer-text">8 / 15</div>
-    </div>
-    <!-- Control 8 -->
-    <div class="control-panel" id="control-8">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(8)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-8" checked>
-                <label for="auto-play-8">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-8" checked>
-                <label for="auto-advance-8">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-8" class="select-ctrl" onchange="updateSpeed(8)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(7)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(9)">次へ ▶</button>
-        </div>
-    </div>
-
-    <!-- Slide 9 (New) -->
-    <div class="slide" id="slide-9">
-        <div class="slide-header">
-            <div class="slide-title">8. 適正運行と将来の引き継ぎ輸送</div>
-        </div>
-        <div class="slide-content">
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-60">
-                        <div class="card" style="margin-bottom: 10px;">
-                            <div class="card-title">🛡️ 適正運行の大原則（法令厳守）</div>
-                            <div style="font-size: 12pt; line-height: 1.5;">
-                                「発地 または 着地のいずれかが、自社の営業所エリア内であること」という法律ルールを100%徹底。不適切な帰り便受注を一切行わず、クリーンな信頼を構築。
-                            </div>
-                        </div>
-                        <div class="card" style="margin-bottom: 10px;">
-                            <div class="card-title">🔮 将来的な「引き継ぎ輸送（バトンリレー）」</div>
-                            <div style="font-size: 12pt; line-height: 1.5;">
-                                適正ルールの範囲内で、長距離案件時に各社のエリア境界で引き継ぎ、安全に繋いでいく搬送モデルの将来的な実現。
-                            </div>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-40" style="background-color: #edf2f7; padding: 15px; border-radius: 6px;">
-                        <div style="font-weight: bold; color: #2b6cb0; font-size: 14pt; margin-bottom: 10px; text-align: center;">📍 将来の連携リレー例</div>
-                        <div style="font-size: 11pt; line-height: 1.8;" class="font-bold text-slate-700">
-                            仙台（発） ➔ 福島 ➔ 栃木 ➔ 成田 ➔（空輸連携）
-                        </div>
-                        <p class="text-xs text-slate-500 mt-2">
-                            ※各社が自営業区域内のみを担当することで、乗務員の疲労軽減と安全適正な運行管理を実現する。
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="subtitle-bar" style="margin-top:10px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-9">私たちの生命線は適正な運行ルールです。発地または着地のいずれかが、自社の営業所エリア内であることという大原則を100%遵守します。エリア外を完結する不適正な帰り便受注は一切行わず、クリーンな運営を徹底します。その上で、将来の展望として、合法的に各社の営業エリアを活かした『引き継ぎ輸送』、例えば仙台から福島、福島から栃木、栃木から成田、そして空輸へ…とバトンを繋ぐ連携を検証していきたいと考えています。</div>
-            </div>
-        </div>
-        <div class="footer-text">9 / 15</div>
-    </div>
-    <!-- Control 9 -->
-    <div class="control-panel" id="control-9">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(9)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-9" checked>
-                <label for="auto-play-9">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-9" checked>
-                <label for="auto-advance-9">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-9" class="select-ctrl" onchange="updateSpeed(9)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(8)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(10)">次へ ▶</button>
-        </div>
-    </div>
-
-    <!-- Slide 10 (New) -->
-    <div class="slide" id="slide-10">
-        <div class="slide-header">
-            <div class="slide-title">9. 会員活性化と事業者支援モデル</div>
-        </div>
-        <div class="slide-content">
-            <div style="text-align: center; font-size: 16pt; font-weight: bold; color: #2b6cb0; margin-bottom: 10px;">
-                会費以上の実質メリットと経営基盤支援
-            </div>
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-50">
-                        <div class="card" style="border-left-color: #48bb78; min-height: 52mm; margin-bottom:0;">
-                            <div class="card-title">⚖️ 併設行政書士による補助金申請支援</div>
-                            <ul style="font-size: 11pt;">
-                                <li>設備投資や車両購入に使える公的支援を強力代行</li>
-                                <li>煩雑な手続きを完全クリアし経営強化に貢献</li>
-                                <li><strong>着手金：<span class="text-emerald-600 font-black">0円</span> / 成功報酬：10%程度</strong> (内容による)</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-50">
-                        <div class="card" style="border-left-color: #2b6cb0; min-height: 52mm; margin-bottom:0;">
-                            <div class="card-title">🎯 コストの完全回収モデル</div>
-                            <ul style="font-size: 11pt;">
-                                <li>年会費が1万円に下がったことで回収負担は激減。</li>
-                                <li>年間わずか3件の共同受注、あるいは補助金受給1回だけで、会費を遥かに超えるリターンを獲得可能。</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="subtitle-bar" style="margin-top:15px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-10">単に会費を集めるだけではなく、会員事業者の活性化を全力で支援するため、併設する行政書士法人と連携し、着手金0円、成功報酬10%程度で、個社向けの補助金・助成金の申請代行を強くサポートします。価値を提供することが重要だと考えています。</div>
-            </div>
-        </div>
-        <div class="footer-text">10 / 15</div>
-    </div>
-    <!-- Control 10 -->
-    <div class="control-panel" id="control-10">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(10)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-10" checked>
-                <label for="auto-play-10">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-10" checked>
-                <label for="auto-advance-10">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-10" class="select-ctrl" onchange="updateSpeed(10)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(9)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(11)">次へ ▶</button>
-        </div>
-    </div>
-
-    <!-- Slide 11 (New) -->
-    <div class="slide" id="slide-11">
-        <div class="slide-header">
-            <div class="slide-title">10. 品質維持とWeb研修の併用</div>
-        </div>
-        <div class="slide-content">
-            <div style="text-align: center; font-size: 15pt; font-weight: bold; color: #2d3748; margin-bottom: 10px;">
-                最高品質ブランドを保つ共通ルール ＆ 無理のない研修形態
-            </div>
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-50">
-                        <div class="card" style="border-left-color: #ecc94b; margin-bottom:0; min-height: 52mm;">
-                            <div class="card-title">🛡️ 安全管理と完了報告</div>
-                            <ul style="font-size: 11pt;">
-                                <li>車両・資器材の点検整備、守秘義務の徹底</li>
-                                <li>案件終了後の簡易報告（エビデンス蓄積）</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-50">
-                        <div class="card" style="border-left-color: #4299e1; margin-bottom:0; min-height: 52mm;">
-                            <div class="card-title">💻 日常運行の障害にならない工夫</div>
-                            <ul style="font-size: 11pt;">
-                                <li>「研修参加で車を止めざるを得ない」を回避。</li>
-                                <li><strong>可能な限りWebやオンライン、オンデマンド受講を併用</strong>できる現実的な研修プログラム。</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="subtitle-bar" style="margin-top:15px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-11">当然ながら、支援を受ける以上、一定のルールも必要になります。安全管理、守秘義務、品質維持、報告義務などです。これは縛るためではなく、みんなでブランドを守るためです。なお、研修参加は各会員の日常事業の障害にならないよう、可能な限りWebなどを併用できる形にして負担を最小限に抑えます。</div>
-            </div>
-        </div>
-        <div class="footer-text">11 / 15</div>
-    </div>
-    <!-- Control 11 -->
-    <div class="control-panel" id="control-11">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(11)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-11" checked>
-                <label for="auto-play-11">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-11" checked>
-                <label for="auto-advance-11">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-11" class="select-ctrl" onchange="updateSpeed(11)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(10)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(12)">次へ ▶</button>
-        </div>
-    </div>
-
-    <!-- Slide 12 -->
-    <div class="slide" id="slide-12">
-        <div class="slide-header">
-            <div class="slide-title">11. 日本移送医療システムは大丈夫か</div>
-        </div>
-        <div class="slide-content">
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-50">
-                        <div class="card" style="margin-bottom:0; min-height: 52mm;">
-                            <div class="card-title">⚙️ 法人維持と税負担への配慮</div>
-                            <p style="font-size:12pt; line-height:1.5;">社団法人であっても均等割や事務コストなどの固定的な税負担は避けて通れません。これは当然しっかりと管理します。</p>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-50">
-                        <div class="card" style="margin-bottom:0; min-height: 52mm;">
-                            <div class="card-title">🛠️ 会費に頼らない「自立」モデル</div>
-                            <p style="font-size:12pt; line-height:1.5;">会員からの会費だけで運営するのではなく、各種営業代行・教育プログラム、共同受注手数料などの実務事業による収益で、健全に自立・運営します。</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="subtitle-bar" style="margin-top:20px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-12">これも心配される点だと思います。一般社団法人であっても、均等割や税負担があります。しかし、会費だけに頼るのではなく、営業支援、教育、認証、共同受注などの事業を行いながら、自助努力で運営していきたいと考えています。</div>
-            </div>
-        </div>
-        <div class="footer-text">12 / 15</div>
-    </div>
-    <!-- Control 12 -->
-    <div class="control-panel" id="control-12">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(12)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-12" checked>
-                <label for="auto-play-12">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-12" checked>
-                <label for="auto-advance-12">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-12" class="select-ctrl" onchange="updateSpeed(12)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(11)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(13)">次へ ▶</button>
-        </div>
-    </div>
-
-    <!-- Slide 13 -->
-    <div class="slide" id="slide-13">
-        <div class="slide-header">
-            <div class="slide-title">12. 5年後のイメージ</div>
-        </div>
-        <div class="slide-content">
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-50">
-                        <div class="card" style="margin-bottom:0; min-height: 52mm;">
-                            <div class="card-title">📈 段階的なネットワークの拡大</div>
-                            <div style="font-size: 16pt; margin: 15px 0; text-align: center;" class="font-bold">
-                                現在：<strong style="font-size: 20pt; color: #718096;">6社</strong> ➔ ターゲット：<strong style="font-size: 22pt; color: #2b6cb0;">20社</strong> ➔ 5年後：<strong style="font-size: 24pt; color: #2f855a;">50社</strong>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-50">
-                        <div class="card" style="margin-bottom:0; min-height: 52mm;">
-                            <div class="card-title">🚑 全国をカバーする民間救急インフラ</div>
-                            <p style="font-size:12pt; line-height:1.5;">地域を問わず、安全にそして適正な連携体制で患者搬送を支え合える、真の準救急補完ネットワークを完成させます。</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="subtitle-bar" style="margin-top:20px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-13">私の夢は、ネプトジャパンを全国ネットワークにすることです。現在6社ですが、20社、50社と増やしていきたい。そして全国どこでも患者搬送を支えられる仕組みを作りたいと思っています。</div>
-            </div>
-        </div>
-        <div class="footer-text">13 / 15</div>
-    </div>
-    <!-- Control 13 -->
-    <div class="control-panel" id="control-13">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(13)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-13" checked>
-                <label for="auto-play-13">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-13" checked>
-                <label for="auto-advance-13">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-13" class="select-ctrl" onchange="updateSpeed(13)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(12)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(14)">次へ ▶</button>
-        </div>
-    </div>
-
-    <!-- Slide 14 -->
-    <div class="slide" id="slide-14">
-        <div class="slide-header">
-            <div class="slide-title">13. 会員メリット</div>
-        </div>
-        <div class="slide-content">
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-50" style="padding-bottom:0;">
-                        <div class="card" style="margin-bottom: 8px;">
-                            <div class="card-title">💼 1. 仕事が増える</div>
-                            <div style="font-size:11.5pt;">一社ではアプローチしにくい大型法人包括案件の共有</div>
-                        </div>
-                        <div class="card" style="margin-bottom:0;">
-                            <div class="card-title">📖 2. 学べる環境</div>
-                            <div style="font-size:11.5pt;">Web・オンライン併用で、運行の邪魔をせず品質向上</div>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-50" style="padding-bottom:0;">
-                        <div class="card" style="margin-bottom: 8px;">
-                            <div class="card-title">🤝 3. 助け合える仲間</div>
-                            <div style="font-size:11.5pt;">顔を合わせて協力し合える、適正ルールの広域連携</div>
-                        </div>
-                        <div class="card" style="margin-bottom:0;">
-                            <div class="card-title">🎖️ 4. 信用が上がる</div>
-                            <div style="font-size:11.5pt;">第三者機関（社団）による品質保証認証のメリット</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="subtitle-bar" style="margin-top:10px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-14">最終的には、会員が、仕事が増える、学べる、助け合える、信用が上がる、そういう組織にしたいと思っています。</div>
-            </div>
-        </div>
-        <div class="footer-text">14 / 15</div>
-    </div>
-    <!-- Control 14 -->
-    <div class="control-panel" id="control-14">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(14)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-14" checked>
-                <label for="auto-play-14">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-14" checked>
-                <label for="auto-advance-14">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-14" class="select-ctrl" onchange="updateSpeed(14)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(13)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(15)">次へ ▶</button>
-        </div>
-    </div>
-
-    <!-- Slide 15 -->
-    <div class="slide" id="slide-15">
-        <div class="slide-header">
-            <div class="slide-title">14. ご意見をいただきたい</div>
-        </div>
-        <div class="slide-content">
-            <div style="font-size: 16pt; margin-bottom: 15px; text-align: center; font-weight: bold; color: #2c3e50; padding: 12px; background-color: #f8fafc; border-radius: 6px;">
-                これは決定事項ではありません。対話を通じて磨き上げます。
-            </div>
-            <div class="layout-table">
-                <div class="layout-row">
-                    <div class="layout-cell w-50">
-                        <div class="card" style="margin-bottom:0;">
-                            <div class="card-title">💬 ざっくばらんな対話の場</div>
-                            <p style="font-size:12pt; line-height:1.5;">今回の再編案の枠組みについて、どう感じたか、どのような工夫があれば現場が助かるか、ぜひご意見をください。</p>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-50">
-                        <div class="card" style="margin-bottom:0;">
-                            <div class="card-title">💡 現場の声を反映します</div>
-                            <p style="font-size:12pt; line-height:1.5;">会費・手数料、中継輸送モデル、研修のやり方など、気になる点はすべて対話の中でさらに良い形に改善します。</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="subtitle-bar" style="margin-top:15px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-15">今日の話は提案です。まだ決定事項ではありません。皆さんの現場の意見を聞きながら、もっと良い形にしていきたいと思います。</div>
-            </div>
-        </div>
-        <div class="footer-text">15 / 15</div>
-    </div>
-    <!-- Control 15 -->
-    <div class="control-panel" id="control-15">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(15)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-15" checked>
-                <label for="auto-play-15">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-15" checked>
-                <label for="auto-advance-15">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-15" class="select-ctrl" onchange="updateSpeed(15)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(14)">◀ 前へ</button>
-            <button class="control-btn" onclick="scrollToSlide(16)">次へ ▶</button>
-        </div>
-    </div>
-
-    <!-- Slide 16 -->
-    <div class="slide" id="slide-16">
-        <div class="slide-header">
-            <div class="slide-title">15. ネプトジャパン第2ステージへ</div>
-        </div>
-        <div class="slide-content">
-            <div style="text-align: center; font-size: 18pt; font-weight: bold; color: #1a365d; margin-bottom: 20px; margin-top: 10px;">
-                これまでの歩みを肯定し、未来へこの財産を繋ぐ。
-            </div>
-            <div class="layout-table" style="background-color: #f8fafc; padding: 20px; border-radius: 6px;">
-                <div class="layout-row">
-                    <div class="layout-cell w-50">
-                        <div class="card" style="background-color:white; border-left-color:#1a365d; margin-bottom:0; min-height:38mm;">
-                            <div class="card-title">💡 財産を次世代へ引き継ぐ</div>
-                            <p style="font-size:12pt; line-height:1.5;">組合をなくしたいのではありません。この絆を、よりスマートで持続可能なシステムに磨き上げるのが今回の狙いです。</p>
-                        </div>
-                    </div>
-                    <div class="layout-cell w-50">
-                        <div class="card" style="background-color:white; border-left-color:#2f855a; margin-bottom:0; min-height:38mm;">
-                            <div class="card-title">🤝 志は熱く、実務はスマートに</div>
-                            <p style="font-size:12pt; line-height:1.5;">双方の持ち味を活かし合いながら、より軽やかに、そして強固に、第2ステージへと共に歩みを進めましょう。</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="subtitle-bar" style="margin-top:15px;">
-                <div class="subtitle-heading">🎙️ SPEAKER SUBTITLE (杉澤修 字幕)</div>
-                <div class="subtitle-text" id="sub-text-16">最後になります。私はネプトジャパンをなくしたいのではありません。むしろ、ネプトジャパンという財産を次の世代へ引き継ぎたいと思っています。そのために、今のままで良いのか、もっと良い方法があるのか、皆さんと一緒に考えたい。本日はその第一歩です。ご清聴ありがとうございました。</div>
-            </div>
-        </div>
-        <div class="footer-text">15 / 15</div>
-    </div>
-    <!-- Control 16 -->
-    <div class="control-panel" id="control-16">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button class="control-btn" onclick="toggleSpeech(16)">🔊 音声再生 / 一時停止</button>
-            <button class="control-btn" style="background-color: #4a5568;" onclick="stopSpeech()">⏹ 停止</button>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-play-16" checked>
-                <label for="auto-play-16">自動再生</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="auto-advance-16" checked>
-                <label for="auto-advance-16">自動ページ送り</label>
-            </div>
-            <div>
-                <select id="speed-16" class="select-ctrl" onchange="updateSpeed(16)">
-                    <option value="1.0">標準</option>
-                    <option value="1.2" selected>少し早口</option>
-                    <option value="1.4">早口</option>
-                </select>
-            </div>
-        </div>
-        <div class="navigation-controls">
-            <button class="control-btn" onclick="scrollToSlide(15)">◀ 前へ</button>
-            <button class="control-btn" onclick="exportToPowerPoint()" style="background-color: #2f855a;">🎉 完了 (パワポ書き出し)</button>
-        </div>
-    </div>
-
-    <!-- JavaScript Data and Integration -->
+    <!-- プレゼンテーション全スライドデータ＆制御スクリプト -->
     <script>
         const presentationData = [
             {
-                id: 1,
                 title: "ネプトジャパンの未来について",
-                speech: "皆さん、本日はお忙しい中お集まりいただきありがとうございます。本日はネプトジャパン協同組合の今後について、私なりの考えをお話しし、皆さんのご意見をいただきたいと思います。今日の話は、結論ありきではありません。組合をなくすとか、社団法人へ移るとか、そのような話ではなく、ネプトジャパンを今後どのように発展させていくのが良いのか、皆さんと一緒に考えるための説明会です。"
+                subtitle: "組合再編説明会資料",
+                body: `<div class="text-center py-6">
+                        <h3 class="text-4xl lg:text-5xl font-black text-blue-900 mb-4 leading-tight">ネプトジャパンの未来について</h3>
+                        <p class="text-2xl text-slate-600 font-extrabold">〜 組合再編説明会資料 〜</p>
+                        <div class="mt-14 text-base text-slate-400 font-bold tracking-widest uppercase">一般社団法人 日本移送医療システム</div>
+                       </div>`,
+                speech: `皆さん、本日はお忙しい中お集まりいただきありがとうございます。
+本日はネプトジャパン協同組合の今後について、私なりの考えをお話しし、皆さんのご意見をいただきたいと思います。
+今日の話は、結論ありきではありません。組合をなくすとか、社団法人へ移るとか、そのような話ではなく、ネプトジャパンを今後どのように発展させていくのが良いのか、皆さんと一緒に考えるための説明会です。`
             },
             {
-                id: 2,
-                title: "1. 本日の目的",
-                speech: "本日の目的は、私が率先して立ち上げた組合構想の魂を守りつつ、直面している課題を解決し、ネプトを未来へとつなぐための再編案について意見交換を行うことです。現状の課題を共有し、どうすれば会員の皆様の負担を減らし、活動をより実質的なものにできるか、前向きな解決策を提示します。"
+                title: "ご挨拶",
+                subtitle: "私の立場と思い入れ",
+                body: `<div class="space-y-5">
+                        <p class="font-extrabold text-blue-950 text-xl">■ 提案者の立場とこれまでの関わり</p>
+                        <ul class="list-disc pl-6 space-y-3 text-slate-700 font-extrabold text-lg">
+                            <li>一般社団法人日本移送医療システム 代表理事 杉澤 修</li>
+                            <li>ネプトジャパン協同組合 創設メンバー</li>
+                        </ul>
+                        <div class="p-5 bg-blue-50 border border-blue-100 rounded-xl text-blue-950 font-black text-lg mt-6 shadow-sm">
+                            💡 私の立ち位置について：
+                            組合を否定したり崩壊させたりする意図はありません。創設メンバーとして「作ったネプトジャパンを今後どのように最も適正な形で次世代に育てるか」を誠実に提案いたします。
+                        </div>
+                       </div>`,
+                speech: `私はご存じのとおり、一般社団法人日本移送医療システムの代表理事であり、ネプトジャパン協同組合の創設メンバーでもあります。ですから、組合には強い思い入れがあります。
+今日は組合を否定するために立っているのではありません。むしろ、せっかく作ったネプトジャパンを今後どう育てるかを考えるためにお話ししています。`
             },
             {
-                id: 3,
-                title: "2. ネプトジャパン設立の目的",
-                speech: "ネプトジャパンを設立した目的は、民間救急事業者が力を合わせ、一社ではできないことを実現するためでした。情報共有、共同受注、技術向上、行政への提言、準救急制度の推進。これらが目的でした。そして、その目的は今も変わっていません。"
+                title: "ネプトジャパン設立の目的",
+                subtitle: "原点と変わらない志",
+                body: `<div class="space-y-4">
+                        <p class="font-bold text-blue-950 text-xl">■ 力を合わせ、一社ではできないことを実現する</p>
+                        <div class="grid grid-cols-2 gap-4 mt-2">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 font-extrabold shadow-sm flex items-center gap-2">🤝 事業者間連携</div>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 font-extrabold shadow-sm flex items-center gap-2">💼 共同受注推進</div>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 font-extrabold shadow-sm flex items-center gap-2">📐 技術標準化</div>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 font-extrabold shadow-sm flex items-center gap-2">🏛️ 行政への提言</div>
+                        </div>
+                        <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-xl text-indigo-950 font-black text-center mt-5 text-xl">
+                            🚀 核心のゴール：準救急制度の推進
+                        </div>
+                       </div>`,
+                speech: `ネプトジャパンを設立した目的は、民間救急事業者が力を合わせ、一社ではできないことを実現するためでした。情報共有、共同受注、技術向上、行政への提言、準救急制度の推進。これらが目的でした。そして、その目的は今も変わっていません。`
             },
             {
-                id: 4,
-                title: "3. これまでの成果",
-                speech: "私はまずここを強調したいと思います。ネプトジャパンは失敗した組織ではありません。短期間で、事業者同士のネットワークを作り、相互応援体制を作り、行政との接点もできました。準救急構想も形になってきました。まずはここまで積み上げてきた皆さんの努力に感謝したいと思います。"
+                title: "これまでの成果",
+                subtitle: "積み上げてきたネットワーク",
+                body: `<div class="space-y-3">
+                        <p class="font-extrabold text-emerald-950 text-xl">■ これまで積み上げ、確立してきたアセット</p>
+                        <ul class="space-y-3 pl-4 text-slate-700 font-extrabold text-lg">
+                            <li class="flex items-center gap-3">🟢 <strong class="text-blue-900">事業者間ネットワーク形成：</strong> 顔の見える信頼関係の構築</li>
+                            <li class="flex items-center gap-3">🟢 <strong class="text-blue-900">相互応援体制の確立：</strong> 現場での緊密な協力実績</li>
+                            <li class="flex items-center gap-3">🟢 <strong class="text-blue-900">行政・地域との接点：</strong> 民間救急の必要性の訴求</li>
+                        </ul>
+                        <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-950 font-black text-center mt-6">
+                            ✨ 準救急構想の骨組みが、皆様の努力により確実に形になってきています。
+                        </div>
+                       </div>`,
+                speech: `私はまずここを強調したいと思います。ネプトジャパンは失敗した組織ではありません。短期間で、事業者同士のネットワークを作り、相互応援体制を作り、行政との接点もできました。準救急構想も形になってきました。まずはここまで積み上げてきた皆さんの努力に感謝したいと思います。`
             },
             {
-                id: 5,
-                title: "4. 現在の課題と将来の不安",
-                speech: "ここで誤解してほしくないのですが、均等割が高いという話ではありません。現在、組合全体で年間約8万円の均等割があります。しかしそのうち、中央会等への負担が約5万円あります。結果として、集金している活動費、つまり各社が負担している年会費2万円がそのほとんどで遣われてしまい、ネプトジャパン独自の活動に使えるお金が残りません。営業活動やシステム整備を考えると、少し工夫が必要ではないかと思っています。"
+                title: "なぜ最初から社団一本化しなかったのか",
+                subtitle: "初期の明確な役割分担",
+                body: `<div class="grid grid-cols-2 gap-5">
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-sm">
+                            <h4 class="font-extrabold text-blue-900 mb-3 text-lg">🤝 ネプトジャパン協同組合</h4>
+                            <p class="text-base text-slate-600 font-bold leading-relaxed">民間救急事業者の実質的な営業アライアンス、現場のネットワーク形成、共同受注。</p>
+                        </div>
+                        <div class="bg-indigo-50 p-5 rounded-2xl border border-indigo-150 shadow-sm">
+                            <h4 class="font-extrabold text-indigo-900 mb-3 text-lg">🎓 一般社団法人日本移送医療システム</h4>
+                            <p class="text-base text-slate-600 font-bold leading-relaxed">教育、研究、中立的な評価、認証を担う「第三者機関」としての役割。</p>
+                        </div>
+                       </div>
+                       <p class="text-base text-slate-500 font-bold mt-5 text-center bg-slate-100 py-2 rounded-xl">
+                            💡 目的：評価・認証する側と、自ら営業・受注を行う側を分離して中立性を担保するため。
+                       </p>`,
+                speech: `この質問は必ず出ると思います。実は役割を分けていました。日本移送医療システムには、教育、研究、評価、認証という第三者機関の役割を持たせたかったのです。もし営業や受注を直接行うと、評価する側と評価される側が同じになってしまいます。そのため、事業者連携はネプトジャパン、教育や研究は日本移送医療システム、という考え方でスタートしました。`
             },
             {
-                id: 6,
-                title: "5. 何を守りたいのか",
-                speech: "私は何より、ネプトジャパンの名前を守りたいと思っています。また、会員同士の信頼関係、準救急構想、ネットワーク、これらも守りたい。組織の形が変わるとしても、これらを失うつもりはありません。"
+                title: "運営して見えてきた課題",
+                subtitle: "実践したからこそ分かったこと",
+                body: `<div class="space-y-4">
+                        <p class="font-extrabold text-slate-800 text-xl">■ 分割運営による実務上の不整合</p>
+                        <div class="p-5 bg-amber-50 border border-amber-200 rounded-2xl text-amber-950 font-bold text-base space-y-3 shadow-sm">
+                            <div>・営業活動支援、研修の案内、品質管理を別々に行う管理の煩雑さ</div>
+                            <div>・実務が複数組織にまたがることによるリソースの分散</div>
+                        </div>
+                        <p class="text-xl text-blue-950 font-black text-center mt-4">
+                            💡 これは失敗ではなく、実際に熱心に動かしたからこそ見えた「前向きな課題」です。
+                        </p>
+                       </div>`,
+                speech: `しかし実際にやってみると、営業支援、教育研修、共同受注、品質管理などを別々に運営する難しさも見えてきました。これは失敗ではありません。やってみたからこそ見えてきた課題です。`
             },
             {
-                id: 7,
-                title: "6. 組合再編案（役割分担）",
-                speech: "ここが今日の一番の提案です。社団法人の方が絶対いいということではなく、協同組合としての意思決定やブランド、皆様の絆を守りながら、日本移送医療システムが実務、つまり営業支援、教育研修、共同受注、品質管理などの事務局サポートを担当する。会員事業者はそのサービスを利用する。対等な役割分担をすることで、お互いに軽くなる。そんな形も考えられるのではないかという提案です。"
+                title: "組合運営の現状",
+                subtitle: "財務構造と個社負担のリアル",
+                body: `<div class="space-y-4">
+                        <div class="bg-red-50 p-5 rounded-2xl border border-red-200 text-red-950 font-extrabold shadow-sm">
+                            <p class="text-lg mb-3">⚠️ 組合維持に必要な年間の固定経費（年間合計：120,000円）</p>
+                            <ul class="list-disc pl-6 space-y-1.5 text-base">
+                                <li><strong>法人住民税均等割（仙台市）：</strong> 年 50,000 円</li>
+                                <li><strong>法人住民税均等割（宮城県）：</strong> 年 20,000 円</li>
+                                <li><strong>宮城県中小企業団体中央会 負担金：</strong> 年 50,000 円</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-slate-100 rounded-xl text-slate-850 font-black text-center text-lg shadow-sm border border-slate-200">
+                            🚨 構造的限界：皆様に負担いただいている<span class="text-red-600 font-extrabold">年会費（活動費2万円）</span>が、この固定費の支払いで全て遣い切られてしまう実態。
+                        </div>
+                       </div>`,
+                speech: `ここで誤解してほしくないのですが、均等割が高いという話ではありません。現在、組合全体で仙台市の均等割が5万円、宮城県の均等割が2万円、さらに宮城県中小企業団体中央会の負担金が5万円あり、これらだけで年間合計12万円の固定費が発生しています。結果として、皆様に負担していただいている活動費、つまり年会費2万円がそのほとんどで遣われてしまい、独自の営業活動やシステム整備に使えるお金が残りません。少し工夫が必要ではないかと思っています。`
             },
             {
-                id: 8,
-                title: "7. 会員制度・手数料制度（案）",
-                speech: "実質的な会員の年会費負担を、現在の20,000円から半額の「10,000円」へと引き下げます。その代わり、実際に仕事が成立して売上が動いた時だけいただく、公平な「受益者負担方式」の手数料制度を導入します。これにより、仕事がない時に固定費だけが出ていくリスクを完全に解消します。"
+                title: "私たちが守りたいもの",
+                subtitle: "形が変わっても失わない財産",
+                body: `<div class="text-center py-2 space-y-4">
+                        <div class="text-3xl font-black text-blue-900 bg-slate-50 py-3 rounded-xl border border-slate-200 shadow-sm">
+                            🛡️ 「ネプトジャパン」の名前
+                        </div>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="bg-blue-50/50 p-4 rounded-xl font-extrabold border border-blue-100 text-base shadow-sm">🤝 会員同士の信頼関係</div>
+                            <div class="bg-blue-50/50 p-4 rounded-xl font-extrabold border border-blue-100 text-base shadow-sm">🎯 準救急構想の志</div>
+                            <div class="bg-blue-50/50 p-4 rounded-xl font-extrabold border border-blue-100 text-base shadow-sm">🌐 相互応援ネットワーク</div>
+                        </div>
+                        <p class="text-base text-slate-500 font-bold mt-3 leading-relaxed">
+                            組織運営のあり方を再編・効率化するとしても、これら守るべき大切なアセットを失うつもりは一切ありません。
+                        </p>
+                       </div>`,
+                speech: `私は何より、ネプトジャパンの名前を守りたいと思っています。また、会員同士の信頼関係、準救急構想、ネットワーク、これらも守りたい。組織の形が変わるとしても、これらを失うつもりはありません。`
             },
             {
-                id: 9,
-                title: "8. 適正運行と将来の引き継ぎ輸送",
-                speech: "私たちの生命線は適正な運行ルールです。発地または着地のいずれかが、自社の営業所エリア内であることという大原則を100%遵守します。エリア外を完結する不適正な帰り便受注は一切行わず、クリーンな運営を徹底します。その上で、将来の展望として、合法的に各社の営業エリアを活かした『引き継ぎ輸送』、例えば仙台から福島、福島から栃木、栃木から成田、そして空輸へ…とバトンを繋ぐ連携を検証していきたいと考えています。"
+                title: "新しい事業者支援モデル",
+                subtitle: "実務の集約とアライアンス（案）",
+                body: `<div class="space-y-4">
+                        <div class="p-3 bg-blue-900 text-white rounded-xl font-black text-center text-lg shadow-md">
+                            🏢 一般社団法人日本移送医療システムが、事務・実務全般を代行サポート
+                        </div>
+                        <div class="grid grid-cols-5 gap-3 text-center text-xs font-black text-slate-700">
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm">📣 営業支援</div>
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm">🎓 教育研修</div>
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm">💼 共同受注</div>
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm">🏅 認証管理</div>
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm">🔍 品質管理</div>
+                        </div>
+                        <p class="p-4 bg-emerald-50 border border-emerald-150 rounded-xl text-emerald-950 font-extrabold text-center text-base">
+                            🤝 会員事業者は、日本移送医療システムからこれらの実務サービスを受け、その対価を会費・手数料として支払う対等な形を提案します。
+                        </p>
+                       </div>`,
+                speech: `ここが今日の一番の提案です。日本移送医療システムが、営業支援、教育研修、共同受注、認証制度、品質管理を担当する。会員事業者はそのサービスを利用する。その対価として会費や手数料を支払う。対等な役割分担をすることで、お互いに軽くなる。そんな形も考えられるのではないかという提案です。`
             },
             {
-                id: 10,
-                title: "9. 会員活性化と事業者支援モデル",
-                speech: "単に会費を集めるだけではなく、会員事業者の活性化を全力で支援するため、併設する行政書士法人と連携し、着手金0円、成功報酬10%程度で、個社向けの補助金・助成金の申請代行を強くサポートします。価値を提供することが重要だと考えています。"
+                title: "会員が受けられるサービス",
+                subtitle: "実質負担の削減と現場のDX支援",
+                body: `<div class="space-y-4 text-base">
+                        <div class="p-3 bg-amber-50 border border-amber-200 text-amber-950 font-black rounded-xl flex justify-between items-center shadow-sm">
+                            <span>💸 個社固定費負担を引き下げ</span>
+                            <span class="text-xl text-red-600 font-black">新・年会費一律 10,000円（従来の半額）</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 font-extrabold">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 shadow-sm">
+                                <p class="text-blue-900 text-lg">📱 運行日誌等のアプリ化提供</p>
+                                <p class="text-xs text-slate-600 font-medium leading-relaxed">日々の面倒な運行記録や日誌・完了報告をアプリ化。スマホで簡単に完了でき、現場の事務作業を劇的に削減します。</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 shadow-sm">
+                                <p class="text-blue-900 text-lg">⚖️ 補助金・助成金申請サポート</p>
+                                <p class="text-xs text-slate-600 font-medium leading-relaxed">併設する行政書士法人と連携し、公的支援を活用した車両購入や設備投資を支援。着手金0円、成功報酬10%程度。</p>
+                            </div>
+                        </div>
+                       </div>`,
+                speech: `会員になることで、病院営業、行政営業、研修、共同受注、認証制度などのサービスを受けることができます。特に今後の日報や運行日誌について、手書きの無駄を排除した『アプリシステム』を開発し提供します。これにより事務作業を劇的に削減できます。さらに併設する行政書士と連携し、補助金申請を着手金0円、成功報酬10%程度でサポートします。価値を提供することが重要だと考えています。`
             },
             {
-                id: 11,
-                title: "10. 品質維持とWeb研修の併用",
-                speech: "当然ながら、支援を受ける以上、一定のルールも必要になります。安全管理、守秘義務、品質維持、報告義務などです。これは縛るためではなく、みんなでブランドを守るためです。なお、研修参加は各会員の日常事業の障害にならないよう、可能な限りWebなどを併用できる形にして負担を最小限に抑えます。"
+                title: "会員にお願いすること",
+                subtitle: "ブランド価値向上のためのルール",
+                body: `<div class="space-y-4">
+                        <div class="p-3 bg-blue-900 text-white rounded-xl font-black text-center text-base shadow-sm">
+                            🏅 品質規約 ＆ 研修に基づく「ネプトジャパン認定制度」の開始
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-base font-bold text-slate-700">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <h4 class="text-blue-900 font-extrabold text-base mb-2">📐 品質規約（設備・資格・業務）</h4>
+                                <ul class="list-disc pl-5 space-y-1 text-xs text-slate-600 font-semibold leading-relaxed">
+                                    <li>搬送用車両・搭載資器材の点検整備基準</li>
+                                    <li>スタッフの必要資格（有資格・専門性）</li>
+                                    <li>安全を最優先した業務運営プロトコル</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <h4 class="text-blue-900 font-extrabold text-base mb-2">🖥️ 研修のWeb併用・オンライン対応</h4>
+                                <ul class="list-disc pl-5 space-y-1 text-xs text-slate-600 font-semibold leading-relaxed">
+                                    <li>日常稼働を止めない柔軟なWeb受講形式</li>
+                                    <li>時間や場所を選ばない技術・安全講習</li>
+                                    <li>ブランドとしての品格を統一・対外アピール</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 font-bold text-center bg-slate-100 py-1.5 rounded-lg">
+                            💡 目的：皆様を縛るためではなく、一般社団法人の第三者認証を通じて「ネプトの信頼性」を対外的に証明するため。
+                        </p>
+                       </div>`,
+                speech: `当然ながら、支援を受ける以上、一定のルールも必要になります。一般社団法人としてネプトジャパンをブランド化し、高い信頼を得るために、設備や乗務員の資格、業務運営に関する規約を定め、これを満たした事業者を認定する制度を開始します。これは皆様を縛るためではなく、みんなでブランドを守るためです。なお、研修参加は可能な限りWebなどを併用できる形にして負担を最小限に抑えます。`
             },
             {
-                id: 12,
-                title: "11. 日本移送医療システムは大丈夫か",
-                speech: "これも心配される点だと思います。一般社団法人であっても、均等割や税負担があります。しかし、会費だけに頼るのではなく、営業支援、教育、認証、共同受注などの事業を行いながら、自助努力で運営していきたいと考えています。"
+                title: "日本移送医療システムは大丈夫か",
+                subtitle: "透明性と自助努力による運営体制",
+                body: `<div class="space-y-4">
+                        <p class="font-extrabold text-slate-800 text-xl">■ 会費のみに依存しない自立した財務設計</p>
+                        <ul class="list-disc pl-6 space-y-2 text-slate-600 font-bold text-base leading-relaxed">
+                            <li>一般社団法人も均等割や固定の税負担が発生することは当然であり、それは自ら責任を持って管理する。</li>
+                            <li>しかし、会員からの会費だけで運営費を賄うような古い構造にはしない。</li>
+                        </ul>
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center font-black mt-4 shadow-sm text-base">
+                            🛠️ 営業支援・教育・認証・共同受注などの<span class="text-blue-900 font-extrabold">「各種実務事業」の活動によって収益を生み出し、その自助努力</span>で安定して運営を行います。
+                        </div>
+                       </div>`,
+                speech: `これも心配される点だと思います。一般社団法人であっても、均等割や税負担があります。しかし、会費だけに頼るのではなく、営業支援、教育、認証、共同受注などの事業を行いながら、自助努力で運営していきたいと考えています。`
             },
             {
-                id: 13,
-                title: "12. 5年後のイメージ",
-                speech: "私の夢は、ネプトジャパンを全国ネットワークにすることです。現在6社ですが、20社、50社と増やしていきたい。そして全国どこでも患者搬送を支えられる仕組みを作りたいと思っています。"
+                title: "5年後のイメージ",
+                subtitle: "全国ネットワークへの拡大構想",
+                body: `<div class="space-y-4">
+                        <p class="font-extrabold text-blue-950 text-center text-lg">📈 ネットワーク規模の拡大シミュレーション</p>
+                        <div class="flex justify-around items-center text-center font-bold mt-3">
+                            <div class="bg-slate-50 p-4 rounded-xl w-32 border border-slate-200 shadow-sm"><span class="text-xs text-slate-400 block font-bold">現在</span><span class="text-lg text-slate-600">6 社</span></div>
+                            <div class="text-xl text-slate-400">➔</div>
+                            <div class="bg-blue-50 p-4 rounded-xl w-32 border border-blue-200 shadow-sm"><span class="text-xs text-blue-400 block font-bold">目標</span><span class="text-lg text-blue-700">20 社</span></div>
+                            <div class="text-xl text-slate-400">➔</div>
+                            <div class="bg-emerald-50 p-4 rounded-xl w-36 border border-emerald-200 shadow-sm"><span class="text-xs text-emerald-500 block font-bold">5年後</span><span class="text-2xl text-emerald-700">50 社</span></div>
+                        </div>
+                        <p class="text-base text-slate-500 font-extrabold text-center mt-4">
+                            🎯 全国どこでも、安全で適切な患者搬送を支えられる仕組み（民間救急補完インフラ）の完成。
+                        </p>
+                       </div>`,
+                speech: `私の夢は、ネプトジャパンを全国ネットワークにすることです。現在6社ですが、20社、50社と増やしていきたい。そして全国どこでも患者搬送を支えられる仕組みを作りたいと思っています。`
             },
             {
-                id: 14,
-                title: "13. 会員メリット",
-                speech: "最終的には、会員が、仕事が増える、学べる、助け合える、信用が上がる、そういう組織にしたいと思っています。"
+                title: "将来ロードマップ",
+                subtitle: "段階的な進化と引き継ぎ輸送の展望",
+                body: `<div class="space-y-4">
+                        <div class="flex justify-between items-center text-center font-bold text-sm text-slate-700">
+                            <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 w-24 shadow-sm">① 認証会員</div>
+                            <div class="text-slate-400">➔</div>
+                            <div class="bg-slate-100 p-2 rounded-lg border border-slate-200 w-24 shadow-sm">② 認定事業者</div>
+                            <div class="text-slate-400">➔</div>
+                            <div class="bg-blue-50 p-2 rounded-lg border border-blue-200 w-32 shadow-sm">③ 準救急認証</div>
+                            <div class="text-slate-400">➔</div>
+                            <div class="bg-emerald-50 p-2 rounded-lg border border-emerald-200 w-32 shadow-sm">🏁 全国搬送NW</div>
+                        </div>
+                        <div class="p-3 bg-indigo-50 border border-indigo-150 text-indigo-950 font-bold text-xs rounded-xl shadow-sm leading-relaxed mt-2">
+                            🔮 将来的な連携アイデア：法令に基づく「引き継ぎ中継搬送」の検証<br>
+                            発着ルールを完全に遵守し、各社の営業エリア内でバトンを繋ぐ長距離リレー連携<br>
+                            <span class="text-blue-900 font-black text-sm block mt-1">💡 例：仙台 ➔ 福島 ➔ 栃木 ➔ 成田 ➔（空輸連携）</span>
+                        </div>
+                       </div>`,
+                speech: `認証会員、認定事業者、準救急認証事業者、そして全国患者搬送ネットワーク。この流れを目指しています。準救急制度の実現もその先にあります。将来的には、発着地ルールを厳格に守った上で、各社の営業エリアを活かした「引き継ぎ輸送（仙台〜福島〜栃木〜成田〜空輸リレーなど）」の連携体制も、一つの夢として検証していきたいと考えています。`
             },
             {
-                id: 15,
-                title: "14. ご意見をいただきたい",
-                speech: "今日の話は提案です。まだ決定事項ではありません。皆さんの現場の意見を聞きながら、もっと良い形にしていきたいと思います。"
+                title: "会員メリット",
+                subtitle: "再編によって目指す会員像",
+                body: `<div class="grid grid-cols-2 gap-4 pt-1">
+                        <div class="bg-slate-50 p-4 rounded-xl border-l-4 border-blue-600 font-extrabold text-base shadow-sm">
+                            🚀 1. 仕事が増える<br><span class="text-xs text-slate-500 font-semibold block mt-1">本部一括営業、大型契約による共同受注の増加</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border-l-4 border-indigo-600 font-extrabold text-base shadow-sm">
+                            📖 2. 学べる・質が上がる<br><span class="text-xs text-slate-500 font-semibold block mt-1">Webをフル活用した無理のない定期品質研修</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border-l-4 border-emerald-600 font-extrabold text-base shadow-sm">
+                            🤝 3. 助け合える仲間<br><span class="text-xs text-slate-500 font-semibold block mt-1">広域かつ強固な適正ルール下での相互協力体制</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border-l-4 border-amber-600 font-extrabold text-base shadow-sm">
+                            🏅 4. 信用が上がる<br><span class="text-xs text-slate-500 font-semibold block mt-1">一般社団法人の客観的な認証によるブランド力借用</span>
+                        </div>
+                       </div>`,
+                speech: `最終的には、会員が、仕事が増える、学べる、助け合える、信用が上がる、そういう組織にしたいと思っています。`
             },
             {
-                id: 16,
-                title: "15. ネプトジャパン第2ステージへ",
-                speech: "最後になります。私はネプトジャパンをなくしたいのではありません。むしろ、ネプトジャパンという財産を次の世代へ引き継ぎたいと思っています。そのために、今のままで良いのか、もっと良い方法があるのか、皆さんと一緒に考えたい。本日はその第一歩です。ご清聴ありがとうございました。"
+                title: "ご意見をいただきたい",
+                subtitle: "対話から創る、皆さんのための再編",
+                body: `<div class="space-y-4 py-2 text-center">
+                        <p class="text-2xl font-black text-blue-950">💡 本日の内容は「決定事項」ではありません</p>
+                        <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 font-bold max-w-xl mx-auto text-base shadow-sm leading-relaxed">
+                            現場で日々汗を流す会員の皆さんの「生の意見」を反映し、
+                            会費、手数料、規約、支援プログラムをさらに良いものへブラッシュアップします。
+                        </div>
+                        <p class="text-lg text-slate-600 font-bold mt-2">
+                            ぜひ、実務上の懸念点やご要望などをざっくばらんにお聞かせください。
+                        </p>
+                       </div>`,
+                speech: `今日の話は提案です。まだ決定事項ではありません。皆さんの現場の意見を聞きながら、もっと良い形にしていきたいと思います。`
+            },
+            {
+                title: "ネプトジャパン第2ステージへ",
+                subtitle: "志を、次の世代へ引き継ぐために",
+                body: `<div class="text-center py-4 space-y-4">
+                        <h3 class="text-3xl font-black text-blue-900 leading-tight">ネプトジャパンという大切な財産を、未来の世代へ</h3>
+                        <div class="p-4 bg-blue-900 text-white rounded-2xl inline-block px-10 font-black text-xl shadow-md">
+                            🎯 志は熱く、実務はスマートに。
+                        </div>
+                        <p class="text-base text-slate-500 font-extrabold pt-4">
+                            今のままで良いのか、もっと良い方法があるのか、皆さんと一緒に考えたい。<br>
+                            本日はその第一歩です。ご清聴ありがとうございました。
+                        </p>
+                       </div>`,
+                speech: `最後になります。私はネプトジャパンをなくしたいのではありません。むしろ、ネプトジャパンという財産を次の世代へ引き継ぎたいと思っています。そのために、今のままで良いのか、もっと良い方法があるのか、皆さんと一緒に考えたい。本日はその第一歩です。ご清聴ありがとうございました。`
             }
         ];
 
-        let synth = window.speechSynthesis;
-        let currentUtterance = null;
-        let activeId = null;
+        let currentIdx = 0;
+        let speechUtterance = null;
+        const synth = window.speechSynthesis;
 
-        // スライドの要素にスクロール（ジャンプ）
-        function scrollToSlide(id) {
-            const el = document.getElementById(`slide-${id}`);
-            if (el) {
-                // 音声を一旦止める
+        // ページ読み込み時の初期化
+        window.addEventListener('DOMContentLoaded', () => {
+            renderSlide(currentIdx);
+        });
+
+        // スライド描画処理
+        function renderSlide(idx) {
+            const data = presentationData[idx];
+            document.getElementById('slide-title').innerText = `${idx + 1}. ${data.title}`;
+            document.getElementById('slide-body').innerHTML = data.body;
+            document.getElementById('slide-counter').innerText = `PAGE ${idx + 1} / ${presentationData.length}`;
+            document.getElementById('subtitle-box').innerText = data.speech;
+            document.getElementById('subtitle-box').scrollTop = 0;
+
+            // 自動音声再生の処理
+            if (document.getElementById('auto-play').checked) {
                 stopSpeech();
-                
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                activeId = id;
-                
-                // 自動再生チェックボックスがONなら、音声読み上げを自動スタート
-                const autoPlayCheck = document.getElementById(`auto-play-${id}`);
-                if (autoPlayCheck && autoPlayCheck.checked) {
-                    // スクロール完了後に再生
-                    setTimeout(() => {
-                        startSpeech(id);
-                    }, 500);
-                }
+                // 少し時間をおいてから再生（遷移時のラグ軽減）
+                setTimeout(() => {
+                    speakCurrentText();
+                }, 100);
             }
         }
 
-        // 音声開始
-        function startSpeech(id) {
-            stopSpeech();
-            activeId = id;
-
-            const data = presentationData.find(item => item.id === id);
-            if (!data) return;
-
-            currentUtterance = new SpeechSynthesisUtterance(data.speech);
-            currentUtterance.lang = 'ja-JP';
-
-            // 速度コントロールの取得
-            const speedSelect = document.getElementById(`speed-${id}`);
-            if (speedSelect) {
-                currentUtterance.rate = parseFloat(speedSelect.value);
+        function nextSlide() {
+            if (currentIdx < presentationData.length - 1) {
+                currentIdx++;
+                renderSlide(currentIdx);
+            } else {
+                stopSpeech();
             }
-
-            currentUtterance.onstart = () => {
-                // 再生中のスライド以外の「再生/一時停止」ボタンのテキストを同期
-                syncPlayButtons("一時停止");
-            };
-
-            currentUtterance.onend = () => {
-                syncPlayButtons("🔊 音声再生 / 一時停止");
-                // 自動ページ送り機能
-                const autoAdvanceCheck = document.getElementById(`auto-advance-${id}`);
-                if (autoAdvanceCheck && autoAdvanceCheck.checked && id < presentationData.length) {
-                    setTimeout(() => {
-                        scrollToSlide(id + 1);
-                    }, 1200); // 1.2秒後に自動で次へ
-                }
-            };
-
-            currentUtterance.onerror = () => {
-                syncPlayButtons("🔊 音声再生 / 一時停止");
-            };
-
-            synth.speak(currentUtterance);
         }
 
-        // 一時停止・再開・新規再生
-        function toggleSpeech(id) {
+        function prevSlide() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                renderSlide(currentIdx);
+            }
+        }
+
+        // 音声合成 (Web Speech API) コントロール
+        function speakCurrentText() {
             if (synth.speaking) {
-                if (activeId === id) {
-                    if (synth.paused) {
-                        synth.resume();
-                        syncPlayButtons("一時停止");
-                    } else {
-                        synth.pause();
-                        syncPlayButtons("🔊 音声再生 / 一時停止");
-                    }
+                synth.cancel();
+            }
+            const text = presentationData[currentIdx].speech;
+            speechUtterance = new SpeechSynthesisUtterance(text);
+            
+            // 日本語の標準音声を取得・割当
+            const voices = synth.getVoices();
+            const jaVoice = voices.find(v => v.lang === 'ja-JP' || v.lang.includes('ja'));
+            if (jaVoice) speechUtterance.voice = jaVoice;
+
+            // コントロールパネルの再生速度を取得
+            const speed = parseFloat(document.getElementById('speed-ctrl').value);
+            speechUtterance.rate = speed;
+
+            // 再生開始/終了イベント管理
+            speechUtterance.onstart = () => {
+                document.getElementById('text-play').innerText = "一時停止";
+                document.getElementById('icon-play').innerText = "⏸";
+            };
+            
+            speechUtterance.onend = () => {
+                document.getElementById('text-play').innerText = "音声再生";
+                document.getElementById('icon-play').innerText = "🔊";
+                
+                // 自動ページ送りが有効かつスライドが最後でなければ遷移
+                const autoAdv = document.getElementById('auto-advance').checked;
+                if (autoAdv && currentIdx < presentationData.length - 1) {
+                    setTimeout(() => {
+                        nextSlide();
+                    }, 1000); // スピーチ終了後、1秒のポーズで次へ
+                }
+            };
+            
+            speechUtterance.onerror = () => {
+                document.getElementById('text-play').innerText = "音声再生";
+                document.getElementById('icon-play').innerText = "🔊";
+            };
+
+            synth.speak(speechUtterance);
+        }
+
+        function toggleSpeech() {
+            if (synth.speaking) {
+                if (synth.paused) {
+                    synth.resume();
+                    document.getElementById('text-play').innerText = "一時停止";
+                    document.getElementById('icon-play').innerText = "⏸";
                 } else {
-                    // 別のスライドを再生
-                    startSpeech(id);
+                    synth.pause();
+                    document.getElementById('text-play').innerText = "音声再生";
+                    document.getElementById('icon-play').innerText = "🔊";
                 }
             } else {
-                startSpeech(id);
+                speakCurrentText();
             }
         }
 
-        // 停止
         function stopSpeech() {
             synth.cancel();
-            syncPlayButtons("🔊 音声再生 / 一時停止");
+            document.getElementById('text-play').innerText = "音声再生";
+            document.getElementById('icon-play').innerText = "🔊";
         }
 
-        // 速度変更の同期
-        function updateSpeed(id) {
-            const selectVal = document.getElementById(`speed-${id}`).value;
-            // 他のスライドの速度セレクトボックスも同期
-            for (let i = 1; i <= presentationData.length; i++) {
-                const el = document.getElementById(`speed-${i}`);
-                if (el) el.value = selectVal;
-            }
-            // 再生中なら再スタートして速度を即反映
-            if (synth.speaking && activeId === id) {
-                startSpeech(id);
+        function updateSpeed() {
+            if (synth.speaking && !synth.paused) {
+                speakCurrentText(); // 速度変更を即時に再生反映
             }
         }
 
-        // ボタンテキストの一括同期
-        function syncPlayButtons(text) {
-            for (let i = 1; i <= presentationData.length; i++) {
-                const btn = document.querySelector(`#control-${i} button`);
-                if (btn && btn.onclick.toString().includes("toggleSpeech")) {
-                    btn.innerText = text;
-                }
-            }
+        // 字幕のフォントサイズ変更
+        function adjustTextSize(direction) {
+            const box = document.getElementById('subtitle-box');
+            let currentSize = parseFloat(window.getComputedStyle(box, null).getPropertyValue('font-size'));
+            box.style.fontSize = (currentSize + (direction * 2)) + 'px';
         }
 
-        // PowerPoint書き出し
+        // PowerPoint書き出し処理
         function exportToPowerPoint() {
             try {
                 let pptx = new PptxGenJS();
                 pptx.layout = 'LAYOUT_16x9';
 
-                presentationData.forEach((slideData) => {
+                presentationData.forEach((slideData, index) => {
                     let slide = pptx.addSlide();
                     
-                    // スライドヘッダー
+                    // スライド上部グラデーションの代わりのネイビー帯
                     slide.addShape(pptx.ShapeType.rect, { x: 0.0, y: 0.0, w: '100%', h: 0.45, fill: { color: '1A365D' } });
                     
-                    slide.addText(`${slideData.id}. ${slideData.title}`, {
+                    // スライドタイトル
+                    slide.addText(`${index + 1}. ${slideData.title}`, {
                         x: 0.5, y: 0.6, w: 12.0, h: 0.8,
-                        fontSize: 26, bold: true, color: '1A365D',
+                        fontSize: 28, bold: true, color: '1A365D',
                         fontFace: 'MS Gothic'
                     });
 
-                    // 各スライドのドキュメント記述
-                    let slideElement = document.getElementById(`slide-${slideData.id}`);
-                    let bodyHtml = slideElement.querySelector('.slide-content') 
-                        ? slideElement.querySelector('.slide-content').innerHTML 
-                        : slideElement.innerHTML;
-
-                    // シンプルなタグ置換でテキストに変換
-                    let plainText = bodyHtml
+                    // メインコンテンツ (HTMLタグを削除しプレーンテキストに加工)
+                    let plainBody = slideData.body
                         .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
                         .replace(/<[^>]*>/g, '\n')
                         .replace(/\n\s*\n/g, '\n')
                         .trim();
 
-                    slide.addText(plainText, {
-                        x: 0.6, y: 1.5, w: 12.0, h: 4.8,
-                        fontSize: 15, color: '2C3E50',
+                    slide.addText(plainBody, {
+                        x: 0.6, y: 1.6, w: 12.1, h: 4.8,
+                        fontSize: 16, color: '334155',
                         fontFace: 'MS Gothic',
                         valign: 'top',
-                        lineSpacing: 22
+                        lineSpacing: 24
                     });
 
-                    // スライドノート（メモ欄）にスピーチ原稿を挿入
+                    // ★ スライドノート (パワーポイントのメモ欄) にスピーチ原稿を自動挿入
                     slide.note = slideData.speech;
                 });
 
+                // PPTX保存ファイル名の設定
                 pptx.writeFile({ fileName: 'ネプトジャパン_組合再編説明会資料' });
             } catch (error) {
                 console.error(error);
