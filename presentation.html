@@ -12,17 +12,22 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #0f172a; font-family: 'Noto Sans JP', sans-serif; color: #334155; padding: 40px; display: flex; flex-direction: column; align-items: center; scroll-behavior: smooth; }
         
-        /* 確実性を重視したコントロールバー */
-        .control-panel { background: #1e293b; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 15px 40px; display: flex; justify-content: center; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border-bottom: 2px solid #10b981; }
+        /* スマホでも押しやすく崩れないコントロールパネル */
+        .control-panel { background: #1e293b; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 12px 20px; display: flex; justify-content: center; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border-bottom: 2px solid #10b981; flex-wrap: wrap; }
+        
         .panel-btn { color: white; border: none; padding: 10px 20px; border-radius: 30px; font-size: 15px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.2s; }
-        .btn-normal { background: #10b981; }
-        .btn-normal:hover { background: #059669; }
-        .btn-fast { background: #0ea5e9; }
-        .btn-fast:hover { background: #0284c7; }
+        .btn-start { background: #10b981; }
+        .btn-start:hover { background: #059669; }
         .btn-stop { background: #ef4444; }
         .btn-stop:hover { background: #dc2626; }
         
-        .status-text { color: #cbd5e1; font-weight: bold; font-size: 15px; margin-left: 10px; }
+        /* ボリューム方式のスピードコントローラー */
+        .speed-controller { display: flex; align-items: center; gap: 10px; color: #cbd5e1; font-weight: bold; font-size: 14px; background: rgba(255,255,255,0.08); padding: 6px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); }
+        .speed-slider { -webkit-appearance: none; width: 110px; height: 6px; background: #475569; border-radius: 5px; outline: none; cursor: pointer; }
+        .speed-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #10b981; border-radius: 50%; cursor: pointer; border: 2px solid #ffffff; }
+        .speed-val { min-width: 45px; color: #10b981; font-family: monospace; font-size: 16px; text-align: center; }
+
+        .status-text { color: #94a3b8; font-weight: bold; font-size: 14px; }
 
         .slide-deck { width: 100%; max-width: 1280px; margin-top: 60px; }
         .slide-card { background: #ffffff; width: 1280px; height: 720px; margin-bottom: 100px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); display: flex; flex-direction: column; position: relative; scroll-margin-top: 100px; }
@@ -57,8 +62,6 @@
         .card-dark li { color: #cbd5e1; }
         li i { color: #10b981; margin-right: 12px; margin-top: 5px; font-size: 16px; }
         
-        .vs-box { display: flex; align-items: center; justify-content: center; background: #e2e8f0; font-weight: bold; border-radius: 50px; width: 50px; height: 50px; margin: auto; color: #0f172a; border: 3px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
         /* Presenter Notes Footer */
         .presenter-notes { background: #f1f5f9; padding: 25px 50px; font-size: 15px; color: #334155; line-height: 1.6; border-top: 2px dashed #cbd5e1; display: flex; justify-content: space-between; align-items: center; }
         .notes-content { flex: 1; padding-right: 20px; }
@@ -72,17 +75,21 @@
 </head>
 <body>
 
-    <!-- ボタン選択式のコントロールパネル -->
     <div class="control-panel">
-        <button class="panel-btn btn-normal" id="start-normal-btn" onclick="startAutoPresentation(1.0)"><i class="fa-solid fa-play"></i> 普通の速さで再生</button>
-        <button class="panel-btn btn-fast" id="start-fast-btn" onclick="startAutoPresentation(1.5)"><i class="fa-solid fa-bolt"></i> 早口(1.5倍)で再生</button>
+        <button class="panel-btn btn-start" id="start-panel-btn" onclick="startAutoPresentation()"><i class="fa-solid fa-play"></i> 再生開始</button>
         <button class="panel-btn btn-stop" style="display:none;" id="stop-panel-btn" onclick="stopPresentation()"><i class="fa-solid fa-stop"></i> 停止</button>
+        
+        <div class="speed-controller">
+            <span><i class="fa-solid fa-gauge-high"></i> 速さ:</span>
+            <input type="range" class="speed-slider" id="speed-range" min="0.8" max="1.8" step="0.1" value="1.2" oninput="updateSpeedLabel(this.value)">
+            <span class="speed-val" id="speed-val-text">1.2x</span>
+        </div>
+
         <span class="status-text" id="status-display">停止中</span>
     </div>
 
     <div class="slide-deck">
 
-        <!-- SLIDE 1 -->
         <div class="slide-card" id="slide-0">
             <div class="slide-body title-slide">
                 <div class="badge">行政システム構築の一考察</div>
@@ -92,13 +99,11 @@
             <div class="presenter-notes">
                 <div class="notes-content">
                     <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 1)</div>
-                    <!-- 読み間違い対策：「中」を「なか」にひらがな修正 -->
                     <p class="text-to-speak">皆さん、こんにちは。杉澤です。本日ここで話す内容には「何を言っているんだ！」「おかしいじゃないの？」という意見が出るのも当然ですが、私が組合に入った時に期待していたことです。もちろんどのようにアプローチするかは今後の課題ですが、今後の私たちのテーマの一つになればと思い提案します。どうぞよろしくお願いします。今日のお話は、もしかすると少し変わった話に聞こえるかもしれません。「行政の縮小化」という言葉だけを聞くと、行政サービスを減らすのか？公務員を減らすのか？そんな印象を持たれる方もいると思います。しかし私がお話ししたいのは、行政を弱くする話ではありません。人口減少社会のなかで、行政サービスを維持するために、どうすればより賢い仕組みにできるのか。その一つの提案として聞いていただければと思います。</p>
                 </div>
             </div>
         </div>
 
-        <!-- SLIDE 2 -->
         <div class="slide-card" id="slide-1">
             <div class="slide-header">
                 <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
@@ -126,13 +131,11 @@
             <div class="presenter-notes">
                 <div class="notes-content">
                     <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 2)</div>
-                    <!-- 読み間違い対策：「中」を「なか」にひらがな修正 -->
-                    <p class="text-to-speak">私は消防救急の現場で長く仕事をしてきました。現場、教育、企画、さまざまな立場を経験しました。そのなかで忘れられない言葉があります。上司から言われた「仕事を選ぶな。これが俺たちの食いぶちになるんだから」という言葉です。当時の私は、なるほど組織を守るとはこういうことかと感じました。しかし今振り返ると、別の見方もできるのではないかと思うようになりました。</p>
+                    <p class="text-to-speak">私は消防救急の現場で長く仕事をしてしてきました。現場、教育、企画、さまざまな立場を経験しました。そのなかで忘れられない言葉があります。上司から言われた「仕事を選ぶな。これが俺たちの食いぶちになるんだから」という言葉です。当時の私は、なるほど組織を守るとはこういうことかと感じました。しかし今振り返ると、別の見方もできるのではないかと思うようになりました。</p>
                 </div>
             </div>
         </div>
 
-        <!-- SLIDE 3 -->
         <div class="slide-card" id="slide-2">
             <div class="slide-header">
                 <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
@@ -160,13 +163,11 @@
             <div class="presenter-notes">
                 <div class="notes-content">
                     <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 3)</div>
-                    <!-- 読み間違い対策：「中」を「なか」にひらがな修正 -->
                     <p class="text-to-speak">行政職員の皆さんを批判したいわけではありません。私自身そのなかにいました。だからこそ感じるのですが、組織というものは、自然と自分を維持しようとする力を持っています。これは行政に限らず、企業でも団体でも同じです。結果として、必要性が薄れた業務でも、なかなか手放せなくなることがあります。私はこれを、行政組織は生き物である、という表現で考えています。</p>
                 </div>
             </div>
         </div>
 
-        <!-- SLIDE 4 -->
         <div class="slide-card" id="slide-3">
             <div class="slide-header">
                 <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
@@ -183,7 +184,7 @@
                 <div class="grid-2">
                     <div class="card-light">
                         <h3>避けて通れない現実</h3>
-                        <p style="font-size: 16px; line-height: 1.6;">日本の人口は確実に減少し、それに伴って地域の税収も減少していく。旧来の仕組みのままで生き残ることはできない。</p>
+                        <p style="font-size: 16px; line-height: 1.6;">日本の人口は確実に減減少、それに伴って地域の税収も減少していく。旧来の仕組みのままで生き残ることはできない。</p>
                     </div>
                     <div class="card-emerald">
                         <h3>負担の集中を防ぐための変革</h3>
@@ -194,13 +195,11 @@
             <div class="presenter-notes">
                 <div class="notes-content">
                     <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 4)</div>
-                    <!-- 読み間違い対策：「中」を「なか」にひらがな修正 -->
                     <p class="text-to-speak">昨年、東北学院大学の先生のお話を聞く機会がありました。そのなかで非常に印象的だったのが、人口減少自体が問題なのではない。問題は、そのなかで行政府がどう変化するかだ。という言葉でした。私はこの言葉に大きな衝撃を受けました。確かに人口は減ります。税収も減ります。しかし仕組みが変わらなければ、その負担はどこかに集中してしまいます。</p>
                 </div>
             </div>
         </div>
 
-        <!-- SLIDE 5 -->
         <div class="slide-card" id="slide-4">
             <div class="slide-header">
                 <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
@@ -236,7 +235,6 @@
             </div>
         </div>
 
-        <!-- SLIDE 6 -->
         <div class="slide-card" id="slide-5">
             <div class="slide-header">
                 <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
@@ -247,7 +245,7 @@
                 <div class="grid-3">
                     <div class="card-light">
                         <h3 style="text-align:center;"><i class="fa-solid fa-file-signature highlight"></i> 許認可・法務</h3>
-                        <p style="font-size:14px; line-height:1.5; color:#475569;">従来の強みである複雑な行政手続き、法律書類 of 作成を通じた確かな法的基盤の提供。</p>
+                        <p style="font-size:14px; line-height:1.5; color:#475569;">従来の強みである複雑な行政手続き、法律書類の作成を通じた確かな法的基盤の提供。</p>
                     </div>
                     <div class="card-light">
                         <h3 style="text-align:center;"><i class="fa-solid fa-handshake-angle highlight"></i> 福祉・防災</h3>
@@ -267,7 +265,6 @@
             </div>
         </div>
 
-        <!-- SLIDE 7 -->
         <div class="slide-card" id="slide-6">
             <div class="slide-header">
                 <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
@@ -300,7 +297,6 @@
             </div>
         </div>
 
-        <!-- SLIDE 8 -->
         <div class="slide-card" id="slide-7">
             <div class="slide-header">
                 <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
@@ -326,12 +322,11 @@
             <div class="presenter-notes">
                 <div class="notes-content">
                     <div class="presenter-notes-title"><i class="fa-solid fa-comments"></i> スピーチ原稿 (スライド 8)</div>
-                    <p class="text-to-speak">個人では限界があります。しかし組合なら、組織として受けることができます。品質管理もできます。責任体制も作れます。そして行政との信頼関係も構築できます。私は行政書士組合には、大きな可能性を持っていると思っています。</p>
+                    <p class="text-to-speak">個人では限界があります。しかし組合なら、組織として受けることができます。品質管理もできます。責任体制も作れます。精度して行政との信頼関係も構築できます。私は行政書士組合には、大きな可能性を持っていると思っています。</p>
                 </div>
             </div>
         </div>
 
-        <!-- SLIDE 9 -->
         <div class="slide-card" id="slide-8">
             <div class="slide-header">
                 <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
@@ -362,7 +357,6 @@
             </div>
         </div>
 
-        <!-- SLIDE 10 -->
         <div class="slide-card" id="slide-9">
             <div class="slide-header">
                 <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
@@ -396,7 +390,6 @@
             </div>
         </div>
 
-        <!-- SLIDE 11 -->
         <div class="slide-card" id="slide-10">
             <div class="slide-header">
                 <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
@@ -423,7 +416,6 @@
             </div>
         </div>
 
-        <!-- SLIDE 12 -->
         <div class="slide-card" id="slide-11">
             <div class="slide-header">
                 <div class="slide-logo">ADMINISTRATIVE SCRIVENER SYSTEM DESIGN</div>
@@ -449,24 +441,29 @@
 
     </div>
 
-    <!-- 確実性を高めたボタン選択式スクリプト -->
     <script>
         let currentSlideIndex = 0;
         let isPlaying = false;
         let currentUtterance = null;
-        let selectedRate = 1.0; 
         const totalSlides = 12;
 
-        function startAutoPresentation(speedRate) {
-            if (speechSynthesis.speaking) {
-                speechSynthesis.cancel();
+        function updateSpeedLabel(val) {
+            document.getElementById('speed-val-text').innerText = val + 'x';
+            
+            // 再生中にツマミをリアルタイムで動かした場合も、即座に音声速度を反映
+            if (isPlaying && window.speechSynthesis.speaking && currentUtterance) {
+                currentUtterance.rate = parseFloat(val);
+            }
+        }
+
+        function startAutoPresentation() {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
             }
             isPlaying = true;
             currentSlideIndex = 0;
-            selectedRate = speedRate;
             
-            document.getElementById('start-normal-btn').style.display = 'none';
-            document.getElementById('start-fast-btn').style.display = 'none';
+            document.getElementById('start-panel-btn').style.display = 'none';
             document.getElementById('stop-panel-btn').style.display = 'block';
             
             playSlide(currentSlideIndex);
@@ -478,21 +475,27 @@
                 return;
             }
 
+            // ハイライトの全リセット
             for (let i = 0; i < totalSlides; i++) {
-                document.getElementById(`slide-${i}`).classList.remove('playing-now');
+                const el = document.getElementById(`slide-${i}`);
+                if(el) el.classList.remove('playing-now');
             }
 
             const targetSlide = document.getElementById(`slide-${index}`);
-            targetSlide.classList.add('playing-now');
-            targetSlide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (targetSlide) {
+                targetSlide.classList.add('playing-now');
+                targetSlide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
 
-            const speedLabel = selectedRate === 1.5 ? '早口' : '普通';
-            document.getElementById('status-display').innerText = `【再生中:${speedLabel}】 スライド ${index + 1} / ${totalSlides}`;
+            document.getElementById('status-display').innerText = `【自動再生中】 ${index + 1} / ${totalSlides}`;
 
             const text = targetSlide.querySelector('.text-to-speak').innerText;
             currentUtterance = new SpeechSynthesisUtterance(text);
             currentUtterance.lang = 'ja-JP';
-            currentUtterance.rate = selectedRate; 
+            
+            // 💡 現在のスライダー設定値をそのまま適用（確実な取得方法に改善）
+            const userSpeed = parseFloat(document.getElementById('speed-range').value);
+            currentUtterance.rate = userSpeed; 
 
             if (window.speechSynthesis) {
                 const voices = window.speechSynthesis.getVoices();
@@ -506,6 +509,7 @@
                 }
             }
 
+            // 音声終了時の次のスライドへの遷移
             currentUtterance.onend = function() {
                 if (isPlaying) {
                     currentSlideIndex++;
@@ -515,23 +519,26 @@
                 }
             };
 
-            speechSynthesis.speak(currentUtterance);
+            window.speechSynthesis.speak(currentUtterance);
         }
 
         function stopPresentation() {
             isPlaying = false;
-            speechSynthesis.cancel();
-            
-            for (let i = 0; i < totalSlides; i++) {
-                document.getElementById(`slide-${i}`).classList.remove('playing-now');
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
             }
             
-            document.getElementById('start-normal-btn').style.display = 'block';
-            document.getElementById('start-fast-btn').style.display = 'block';
+            for (let i = 0; i < totalSlides; i++) {
+                const el = document.getElementById(`slide-${i}`);
+                if(el) el.classList.remove('playing-now');
+            }
+            
+            document.getElementById('start-panel-btn').style.display = 'block';
             document.getElementById('stop-panel-btn').style.display = 'none';
             document.getElementById('status-display').innerText = "停止中";
         }
 
+        // ブラウザ音声機能の初期化
         if (window.speechSynthesis) {
             window.speechSynthesis.getVoices();
             window.speechSynthesis.onvoiceschanged = function() {
