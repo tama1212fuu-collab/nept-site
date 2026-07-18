@@ -177,13 +177,30 @@
     .audio-btn.playing {
       background: #E53E3E;
     }
+    /* 追加：音声設定パネル */
+    .settings-panel {
+      background: #E2E8F0;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      border-top: 1px solid #CBD5E0;
+    }
+    .settings-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .settings-item select, .settings-item input[type="range"] {
+      max-width: 100px;
+    }
     .controls {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 10px 16px;
       background: #F7FAFC;
-      border-top: 1px solid #E2E8F0;
     }
     .nav-btn {
       background: var(--primary);
@@ -459,7 +476,7 @@
         </div>
       </div>
 
-      <!-- Slide 11 (NEW: AI Strategy) -->
+      <!-- Slide 11 -->
       <div class="slide" id="slide-11">
         <div class="slide-header ai-type">
           <div class="slide-title" style="color: #6B46C1;">スライド10：AI時代の企業戦略と組織力</div>
@@ -486,7 +503,7 @@
         </div>
       </div>
 
-      <!-- Slide 12 (NEW: Local Trust & Care Taxi) -->
+      <!-- Slide 12 -->
       <div class="slide" id="slide-12">
         <div class="slide-header">
           <div class="slide-title">スライド11：地域の足を守る活動が基盤になる</div>
@@ -561,6 +578,18 @@
 
     </div>
 
+    <!-- 追加：設定パネル（音声・速度） -->
+    <div class="settings-panel">
+      <div class="settings-item">
+        <label>🗣️ 音声:</label>
+        <select id="voice-select"></select>
+      </div>
+      <div class="settings-item">
+        <label>⏱️ 速度: <span id="speed-val">1.0</span>x</label>
+        <input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="document.getElementById('speed-val').innerText = this.value">
+      </div>
+    </div>
+
     <!-- 常に最下部で固定されるコントロールバー -->
     <div class="controls">
       <button class="nav-btn" id="prev-btn" onclick="prevSlide()">◀ 戻る</button>
@@ -575,8 +604,26 @@
     const synth = window.speechSynthesis;
     let utterance = null;
     let isPlaying = false;
+    let voices = [];
 
-    // 最新の全14スライド分のスピーチテキスト
+    // 音声リストを取得してセレクトボックスにセットする処理
+    function populateVoiceList() {
+      voices = synth.getVoices().filter(v => v.lang.includes('ja'));
+      const voiceSelect = document.getElementById('voice-select');
+      voiceSelect.innerHTML = '';
+      voices.forEach((voice, i) => {
+        const option = document.createElement('option');
+        option.textContent = voice.name;
+        option.value = i;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    populateVoiceList();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = populateVoiceList;
+    }
+
     const speechTexts = {
       1: "皆様、こんにちは。行政書士の杉澤です。今回は、特定卸供給事業者、いわゆるアグリゲーターについて調べてみましたので、行政書士業務としての可能性を皆様と一緒に考えてみたいと思います。",
       2: "きっかけは、阿部先生からいただいた情報でした。衆議院議員の土井とおる先生の政策秘書である佐藤様から、経済産業省所管の特定卸供給事業者の手続きについて打診があったとのことです。私自身も、この制度については今回初めて本格的に調べる機会となりました。そこで、これが行政書士の仕事として成り立つのか、調べてみることにしました。",
@@ -629,7 +676,15 @@
         const text = speechTexts[slideNum];
         utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'ja-JP';
-        utterance.rate = 1.05; // テンポを少しだけ良くするための調整
+        
+        // スライダーの値から速度を設定
+        utterance.rate = parseFloat(document.getElementById('speed-slider').value);
+        
+        // セレクトボックスから選択された音声をセット
+        const selectedVoiceIndex = document.getElementById('voice-select').value;
+        if (voices[selectedVoiceIndex]) {
+            utterance.voice = voices[selectedVoiceIndex];
+        }
         
         utterance.onend = function() {
           playBtn.innerHTML = '🔈 スピーチ再生';
