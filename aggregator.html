@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>特定卸供給事業者（アグリゲーター）の可能性</title>
+  <style>
+    :root {
+      --primary: #1A365D;
+      --secondary: #2B6CB0;
+      --accent: #DD6B20;
+      --warning: #C53030;
+      --bg: #F7FAFC;
+      --card-bg: #FFFFFF;
+      --text: #2D3748;
+      --text-muted: #718096;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
+    }
+    .presentation-container {
+      width: 100%;
+      max-width: 500px;
+      height: 92vh;
+      max-height: 750px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: #EDF2F7;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 7.14%;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    .slide-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .slide {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
+    .slide.active {
+      display: flex;
+    }
+    .slide-wrapper::-webkit-scrollbar {
+      width: 4px;
+    }
+    .slide-wrapper::-webkit-scrollbar-thumb {
+      background: #CBD5E0;
+      border-radius: 4px;
+    }
+    .slide-header {
+      margin-bottom: 10px;
+      border-left: 5px solid var(--accent);
+      padding-left: 10px;
+    }
+    .slide-header.warning-type {
+      border-left: 5px solid var(--warning);
+    }
+    .slide-header.ai-type {
+      border-left: 5px solid #805AD5;
+    }
+    .slide-title {
+      font-size: 1.15rem;
+      color: var(--primary);
+      font-weight: bold;
+      line-height: 1.3;
+    }
+    .slide-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .slide-body {
+      flex: 1;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+    .highlight-box {
+      background: #F7FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 6px;
+    }
+    .highlight-title {
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 4px;
+      font-size: 0.8rem;
+    }
+    .bullet-list {
+      list-style-type: none;
+    }
+    .bullet-list li {
+      position: relative;
+      padding-left: 15px;
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+    }
+    .bullet-list li::before {
+      content: "■";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 0.7rem;
+      top: 1px;
+    }
+    .bullet-list.warning-list li::before {
+      color: var(--warning);
+    }
+    .bullet-list.ai-list li::before {
+      color: #805AD5;
+    }
+    .speech-card {
+      background: #EDF2F7;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.78rem;
+      color: #4A5568;
+      border-top: 3px solid var(--secondary);
+      margin-top: auto;
+    }
+    .speech-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    .audio-btn {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.2s;
+    }
+    .audio-btn:hover {
+      background: #2C5282;
+    }
+    .audio-btn.playing {
+      background: #E53E3E;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      background: #F7FAFC;
+      border-top: 1px solid #E2E8F0;
+    }
+    .nav-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .nav-btn:disabled {
+      background: #CBD5E0;
+      cursor: not-allowed;
+    }
+    .slide-number {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="presentation-container">
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progress"></div>
+    </div>
+
+    <div class="slide-wrapper">
+      <!-- Slide 1 -->
+      <div class="slide active" id="slide-1">
+        <div class="slide-header">
+          <div class="slide-title">特定卸供給事業者（アグリゲーター）を調べてみました</div>
+          <div class="slide-subtitle">～行政書士業務としての可能性を考える～</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box" style="text-align: center; padding: 25px 10px;">
+            <p style="font-weight: bold; color: var(--primary); font-size: 1.05rem; margin-bottom: 8px;">「一緒に勉強しませんか？」</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">新しい仕事を紹介するのではなく、新しい可能性を皆さんと共有し、共に学ぶためのプレゼンテーションです。</p>
+          </div>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-1" onclick="toggleSpeech(1)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-1">皆様、こんにちは。行政書士の杉澤です。今回は、特定卸供給事業者、いわゆるアグリゲーターについて調べてみましたので、行政書士業務としての可能性を皆様と一緒に考えてみたいと思います。</div>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="slide" id="slide-2">
+        <div class="slide-header">
+          <div class="slide-title">スライド1：きっかけ</div>
+          <div class="slide-subtitle">阿部先生からいただいた情報</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box">
+            <div class="highlight-title">✉️ 組合員の皆様へのメッセージ</div>
+            <p style="font-size: 0.78rem; line-height: 1.4;">「昨日、衆議院議員 土井とおる先生の政策秘書 佐藤たかし氏から電話で、経済産業省所管の『特定卸供給事業者』の手続きをお願いできないかとの話がありました。協同組合としての関わりについて模索しています。」</p>
+          </div>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-2" onclick="toggleSpeech(2)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-2">きっかけは、阿部先生からいただいた情報でした。衆議院議員の土井とおる先生の政策秘書である佐藤様から、経済産業省所管の特定卸供給事業者の手続きについて打診があったとのことです。私自身も、この制度については今回初めて本格的に調べる機会となりました。そこで、これが行政書士の仕事として成り立つのか、調べてみることにしました。</div>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="slide" id="slide-3">
+        <div class="slide-header">
+          <div class="slide-title">スライド2：最初の疑問</div>
+          <div class="slide-subtitle">最初は誰もがここからスタートします</div>
+        </div>
+        <div class="slide-body">
+          <ul class="bullet-list">
+            <li><strong>アグリゲーターって何？</strong><br><span style="color:var(--text-muted); font-size:0.75rem;">聞き慣れない言葉、一体どういう事業者なのか？</span></li>
+            <li><strong>行政書士の仕事になるの？</strong><br><span style="color:var(--text-muted); font-size:0.75rem;">私たちの専門領域とどう結びつくのか？</span></li>
+            <li><strong>届出だけなの？</strong><br><span style="color:var(--text-muted); font-size:0.75rem;">スポットの一発業務で終わってしまうのか？</span></li>
+            <li><strong>将来性はあるの？</strong><br><span style="color:var(--text-muted); font-size:0.75rem;">これから本当に必要とされる分野なのか？</span></li>
+          </ul>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-3" onclick="toggleSpeech(3)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-3">調べ始めたとき、私の頭の中は疑問だらけでした。アグリゲーターってそもそも何だろう？本当に行政書士の仕事になるのかな？一回だけの届出で終わりなのだろうか？将来性はあるのか？最初は全く分かりませんでしたが、調べていくうちに意外なことが分かってきました。</div>
+        </div>
+      </div>
+
+      <!-- Slide 4 -->
+      <div class="slide" id="slide-4">
+        <div class="slide-header">
+          <div class="slide-title">スライド3：調べて分かったこと</div>
+          <div class="slide-subtitle">行政書士が活躍できる幅広いフィールド</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box">
+            <div class="highlight-title">🔍 実は数多く存在する行政書士業務</div>
+            <ul class="bullet-list" style="margin-top: 4px;">
+              <li><strong>届出支援</strong>：特定卸供給事業者の要件確認と届出</li>
+              <li><strong>契約書作成</strong>：提携先やユーザーとの各種契約</li>
+              <li><strong>補助金申請</strong>：再エネや蓄電池関連の制度活用</li>
+              <li><strong>規程作成</strong>：内部統制や運用ルールの構築</li>
+              <li><strong>コンプライアンス</strong>：エネルギー関連法規の遵守支援</li>
+              <li><strong>行政との調整</strong>：経産省など関係官庁との事前相談</li>
+            </ul>
+          </div>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-4" onclick="toggleSpeech(4)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-4">調べてみると、実は行政書士が活躍できる業務が数多く存在することが分かりました。単純な届出だけでなく、関係者との契約書作成、補助金申請、社内規程の作成、法令順守のためのコンプライアンス体制構築、行政機関との調整など、多岐にわたります。</div>
+        </div>
+      </div>
+
+      <!-- Slide 5 -->
+      <div class="slide" id="slide-5">
+        <div class="slide-header">
+          <div class="slide-title">スライド4：仕事は届出だけではない</div>
+          <div class="slide-subtitle">事業開始後も続く「継続業務」の価値</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box" style="margin-bottom: 5px; border-left: 4px solid var(--secondary);">
+            <div class="highlight-title">🔄 事業開始後の継続的な支援業務</div>
+            <p style="font-size: 0.78rem; line-height: 1.4; color: var(--text);">
+              事業開始後も、契約更新への対応、法改正への対応、社内規程の見直し、補助金申請、各種届出など、継続的な支援が求められる可能性があります。
+            </p>
+          </div>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-5" onclick="toggleSpeech(5)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-5">この業務の素晴らしいところは、最初の届出をして終わりではない点です。事業開始後も、契約更新への対応、法改正への対応、社内規程の見直し、補助金申請、各種届出など、継続的な支援が求められる可能性があります。このように長く伴走できる継続業務が数多く存在します。</div>
+        </div>
+      </div>
+
+      <!-- Slide 6 -->
+      <div class="slide" id="slide-6">
+        <div class="slide-header">
+          <div class="slide-title">スライド5：今後伸びそうな理由</div>
+          <div class="slide-subtitle">国策と社会変化のメガトレンド</div>
+        </div>
+        <div class="slide-body">
+          <ul class="bullet-list" style="margin-bottom: 8px;">
+            <li><strong>再生可能エネルギー</strong>：脱炭素社会へ向けた必須の選択肢</li>
+            <li><strong>蓄電池・EVの普及</strong>：分散型エネルギー源の急増</li>
+            <li><strong>防災・地域レジリエンス</strong>：災害に強い分散型電源の確立</li>
+            <li><strong>DXの推進</strong>：電力データのデジタル管理と効率化</li>
+          </ul>
+          <div class="highlight-box" style="padding:6px; font-size:0.75rem; text-align:center; border-color:var(--accent); background:#FFFFAF;">
+            <strong>※これらはすべて、国の予算や政策が集中する分野です</strong>
+          </div>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-6" onclick="toggleSpeech(6)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-6">では、なぜこの分野が今後伸びるのか。それは、国の政策と密接に関係しているからです。再生可能エネルギーの普及、蓄電池やEVの活用、あるいは災害に強いまちづくり、いわゆる地域レジリエンス、さらにはDXの推進など、これからの社会に不可欠なテーマばかりだからです。</div>
+        </div>
+      </div>
+
+      <!-- Slide 7 -->
+      <div class="slide" id="slide-7">
+        <div class="slide-header">
+          <div class="slide-title">スライド6：今後の市場拡大予測</div>
+          <div class="slide-subtitle">2030年に向けた成長のシナリオ</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box" style="border-left: 4px solid var(--accent); background: #FFFFAF; padding: 8px; margin-bottom: 8px;">
+            <p style="font-weight: bold; font-size: 0.85rem; color: var(--accent);">📈 今後大きな成長が期待される分野</p>
+            <p style="font-size: 0.75rem; margin-top: 2px;">国のエネルギー政策や各種調査では、市場の大きな拡大が見込まれており、電力の効率化ニーズはさらに高まることが予想されます。</p>
+          </div>
+          <div class="highlight-title">💡 参入が期待されるプレイヤー</div>
+          <ul class="bullet-list">
+            <li><strong>地方自治体</strong>：地域新電力や独自の防災電源ネットワーク構築</li>
+            <li><strong>地元のIT・ベンチャー企業</strong>：電力制御ソフトやシステム開発</li>
+            <li><strong>地域の中小企業</strong>：工場や倉庫への大型蓄電池・太陽光の導入</li>
+          </ul>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-7" onclick="toggleSpeech(7)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-7">では、具体的にどのくらい市場が広がるのかという予測です。国のエネルギー政策や各種調査では、市場の大きな拡大が見込まれており、今後大きく成長することが期待されています。大企業だけでなく、地方自治体や地元のITベンチャー、さらには蓄電池を導入する地元の工場など、身近な中小企業がどんどん関わってきます。つまり、私たちの地域のお客さま自身が、このビジネスの当事者になっていく未来が予測されます。</div>
+        </div>
+      </div>
+
+      <!-- Slide 8 -->
+      <div class="slide" id="slide-8">
+        <div class="slide-header warning-type">
+          <div class="slide-title" style="color: var(--warning);">スライド7：避けて通れない「地域トラブル」のリスク</div>
+          <div class="subtitle" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">～地元の信頼関係をどう守るか～</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box" style="border-left: 4px solid var(--warning); background: #FFF5F5; padding: 8px; margin-bottom: 8px;">
+            <p style="font-weight: bold; font-size: 0.85rem; color: var(--warning);">⚠️ 地域との調和をめぐる課題</p>
+            <p style="font-size: 0.75rem; margin-top: 2px;">実際には、再生可能エネルギー施設をめぐり、地域との合意形成が十分でないまま計画が進み、トラブルとなる事例も報告されています。</p>
+          </div>
+          <div class="highlight-title" style="color: var(--warning);">🚨 行政書士として大切な姿勢</div>
+          <ul class="bullet-list warning-list">
+            <li><strong>地域との合意形成が十分でない事業</strong>の言いなり（代書屋）になってはいけない</li>
+            <li>不調和な手続きを裏方として進めれば、<strong>地元の信頼関係に影響を及ぼす</strong></li>
+            <li>私たちが目指すべきは、単なる業者の味方ではなく<strong>「地域と事業者の調整役」</strong></li>
+          </ul>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-8" onclick="toggleSpeech(8)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-8">しかし、ここで私たちが絶対に避けて通れない、非常に重要な心配事があります。それは、直接電気を作る事業者と、地域住民との間の摩擦です。実際には、再生可能エネルギー施設をめぐり、地域との合意形成が十分でないまま計画が進み、トラブルとなる事例も報告されています。もし私たちが、地域との合意形成が十分でない事業の言いなりになって体裁だけの書類を作る裏方になってしまえば、長年築いた地元の信頼は崩れてしまいます。だからこそ、私たちは単なる代書屋になってはならないのです。</div>
+        </div>
+      </div>
+
+      <!-- Slide 9 -->
+      <div class="slide" id="slide-9">
+        <div class="slide-header">
+          <div class="slide-title">スライド8：行政書士だからできること</div>
+          <div class="slide-subtitle">地域と社会をつなぐ役割としての存在価値</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box" style="text-align: center; border-color: var(--secondary); margin-bottom: 6px; padding: 6px;">
+            <p style="font-weight: bold; color: var(--secondary); font-size: 0.9rem;">私たちは「地域との調和を図るための橋渡し役」</p>
+          </div>
+          <ul class="bullet-list">
+            <li>地域との調和を図るための<strong>「橋渡し役」</strong>になる</li>
+            <li>不慣れな民間企業に住民説明や条例遵守を促し、行政との健全な架け橋となる</li>
+            <li>確実な契約書を作成し、<strong>反社排除条項やトラブル防止策</strong>を組み込む</li>
+            <li>「地域調和型」の正しい手続きで、地元の信頼と事業の安全を守る</li>
+          </ul>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-9" onclick="toggleSpeech(9)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-9">では、どうすればその信頼を守れるのか。それこそが、行政書士だからできることです。地域との調和を図るための橋渡し役になり、企業に対して住民説明や地域条例の遵守を徹底させる。そして反社排除条項を組み込んだ契約書を作る。つまり、地域トラブルを未然に防ぎ、地域と制度を正しく動かす専門家としての役割が、今まさに私たちに求められているのです。</div>
+        </div>
+      </div>
+
+      <!-- Slide 10 -->
+      <div class="slide" id="slide-10">
+        <div class="slide-header">
+          <div class="slide-title">スライド9：私が感じた可能性</div>
+          <div class="slide-subtitle">医療・搬送現場から見えるもう一つの側面</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box" style="margin-bottom:6px; padding: 6px; border-left: 4px solid var(--accent);">
+            <div class="highlight-title" style="color:var(--accent);">🚑 搬送現場とエネルギーの接点</div>
+            <p style="font-size:0.75rem; line-height:1.4;">
+              私は医療搬送にも携わっていますが、停電時に医療機器を使用する方への電力確保の重要性を日々感じています。その意味でも、蓄電池や分散型エネルギーを活用する仕組みは、防災やBCPの観点からも今後ますます重要になるのではないかと考えています。
+            </p>
+          </div>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-10" onclick="toggleSpeech(10)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-10">ここで、少し私自身の視点もお話しさせてください。私は医療搬送にも携わっていますが、停電時に医療機器を使用する方への電力確保の重要性を日々感じています。その意味でも、蓄電池や分散型エネルギーを活用する仕組みは、防災やBCPの観点からも今後ますます重要になるのではないかと考えています。</div>
+        </div>
+      </div>
+
+      <!-- Slide 11 (NEW: AI Strategy) -->
+      <div class="slide" id="slide-11">
+        <div class="slide-header ai-type">
+          <div class="slide-title" style="color: #6B46C1;">スライド10：AI時代の企業戦略と組織力</div>
+          <div class="slide-subtitle">これからの環境変化にどう立ち向かうか</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box" style="border-left: 4px solid #805AD5; background: #FAF5FF; padding: 8px; margin-bottom: 8px;">
+            <p style="font-weight: bold; font-size: 0.85rem; color: #6B46C1;">🤖 AIによる書類作成と効率化の波</p>
+            <p style="font-size: 0.75rem; margin-top: 2px;">今後AIの活用が進めば、企業側でも設置場所の検討や書類作成などの効率化が進む可能性があります。</p>
+          </div>
+          <div class="highlight-title" style="color: #6B46C1;">💡 AIには代替できない私たちの価値</div>
+          <ul class="bullet-list ai-list">
+            <li><strong>対面での泥臭い合意形成</strong>と、地域住民に寄り添うヒューマンスキル</li>
+            <li><strong>東北行政事務事業協同組合</strong>という信頼のネットワーク</li>
+            <li>組合が窓口となり、現場の調整を各地の先生方と連携して進める「組織力」</li>
+          </ul>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-11" onclick="toggleSpeech(11)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-11">さらに視野を広げますと、今後AIの活用が進めば、企業側でも設置場所の検討や書類作成などの効率化が進む可能性があります。私たちも「書類作成」の枠を超え、AIだけでは代替できない価値を示す必要があります。AIに難しく、私たちにできること。それは「地域住民に寄り添い、対面で合意形成を図ること」です。だからこそ、「東北行政事務事業協同組合」が窓口となり、各地の先生方と連携して現場の調整を進める。AIには真似できない「現場の信頼」と「組織力」の掛け合わせが、これからの最大の武器になると考えています。</div>
+        </div>
+      </div>
+
+      <!-- Slide 12 (NEW: Local Trust & Care Taxi) -->
+      <div class="slide" id="slide-12">
+        <div class="slide-header">
+          <div class="slide-title">スライド11：地域の足を守る活動が基盤になる</div>
+          <div class="slide-subtitle">ミクロの信頼がマクロな制度を動かす</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box" style="text-align: center; border-color: var(--secondary); margin-bottom: 6px; padding: 6px;">
+            <p style="font-weight: bold; color: var(--secondary); font-size: 0.9rem;">「あの先生が間に入ってくれるなら安心だ」</p>
+          </div>
+          <ul class="bullet-list">
+            <li>この「現場の信頼」は、一朝一夕に作れるものではありません。</li>
+            <li>地域活動や日々の相談業務を通じて積み重ねた信頼こそが最大の基盤。</li>
+            <li>（実例）医療搬送や介護タクシーを通じた、地域福祉への貢献。</li>
+            <li>最新の制度づくりも、根っこはすべて<strong>「地域の信頼」</strong>で繋がっている。</li>
+          </ul>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-12" onclick="toggleSpeech(12)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-12">そして、この「現場の信頼」は一朝一夕に作れるものではありません。地域活動や日々の相談業務を通じて積み重ねた信頼こそが、いざ新しい施設が地域に入る際、「あの先生が間に入ってくれるなら安心だ」と言っていただける最大の基盤になります。私自身は、その活動の一つとして医療搬送や介護タクシーに携わっていますが、こうした地域福祉への貢献と、アグリゲーターのような最新の制度づくりは、実は「地域の信頼」という太い根っこで一つに繋がっているのです。</div>
+        </div>
+      </div>
+
+      <!-- Slide 13 -->
+      <div class="slide" id="slide-13">
+        <div class="slide-header">
+          <div class="slide-title">スライド12：まとめ</div>
+          <div class="slide-subtitle">これからの行政書士が歩むべき道</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box" style="border-left: 4px solid var(--primary); background: #F7FAFC; padding: 6px; margin-bottom: 4px;">
+            <p style="font-weight: bold; margin-bottom: 2px; font-size: 0.8rem;">🎯 地元の信頼を守り、社会の変化に寄り添う</p>
+            <p style="font-size: 0.75rem; line-height: 1.4;">行政書士の仕事は「今すでにある業務」だけではありません。<br>トラブルリスクから地域を守りながら、新しく広がる活躍のフィールドへ。</p>
+          </div>
+          <div class="highlight-box" style="border-left: 4px solid var(--accent); background: #FFFAF0; padding: 6px;">
+            <p style="font-weight: bold; color: var(--accent); margin-bottom: 2px; font-size: 0.8rem;">🚀 アグリゲーターはその大きな一歩</p>
+          </div>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-13" onclick="toggleSpeech(13)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-13">今回、このテーマを調べて強く感じたのは、行政書士の仕事は今すでにある仕事だけではないということです。リスクから地元の信頼を守り抜き、新しい技術や制度を正しく先導すれば、私たちの活躍の場はさらに広がる可能性があります。その大きな可能性の一つが、このアグリゲーターなのだと確信しました。</div>
+        </div>
+      </div>
+
+      <!-- Slide 14 -->
+      <div class="slide" id="slide-14">
+        <div class="slide-header">
+          <div class="slide-title">最後の一言</div>
+          <div class="slide-subtitle">「一緒に勉強しませんか」</div>
+        </div>
+        <div class="slide-body">
+          <div class="highlight-box" style="padding: 12px 10px; background: #FFF5F5; border-color: #FEB2B2; margin-bottom:4px;">
+            <p style="font-weight: bold; color: #C53030; font-size: 0.9rem; margin-bottom: 4px;">🤝 感謝とこれからの未来像</p>
+            <p style="font-size: 0.76rem; line-height: 1.4; color: #4A5568;">
+              今回このようなテーマをご紹介いただいた阿部先生に感謝申し上げます。私自身まだ勉強中ですが、皆様と一緒に学びながら、新しい可能性を探っていきたいと思っています。行政書士は、制度ができてから手続きを行うだけでなく、新しい制度や社会の変化を理解し、地域と制度をつなぐ役割も担えるのではないか――そんな可能性を、このテーマを通して改めて感じました。
+            </p>
+          </div>
+        </div>
+        <div class="speech-card">
+          <div class="speech-header">
+            <span>🗣️ スピーチ原稿</span>
+            <button class="audio-btn" id="play-btn-14" onclick="toggleSpeech(14)">🔈 スピーチ再生</button>
+          </div>
+          <div id="speech-text-14">最後になりますが、今回このような貴重なテーマをご紹介いただいた阿部先生に、深く感謝申し上げます。私自身まだ勉強中ですが、皆様と一緒に学びながら、新しい行政書士業務の可能性を探っていきたいと思っています。行政書士は、制度ができてから手続きを行うだけではなく、それぞれが地域で積み重ねてきた信頼を基盤に、新しい社会の変化を理解し、地域と制度をつなぐ役割も担えるのではないか――そんな可能性を、このテーマを通して改めて感じました。本日はありがとうございました。</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 常に最下部で固定されるコントロールバー -->
+    <div class="controls">
+      <button class="nav-btn" id="prev-btn" onclick="prevSlide()">◀ 戻る</button>
+      <div class="slide-number" id="slide-num">1 / 14</div>
+      <button class="nav-btn" id="next-btn" onclick="nextSlide()">次へ ▶</button>
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 14;
+    const synth = window.speechSynthesis;
+    let utterance = null;
+    let isPlaying = false;
+
+    // 最新の全14スライド分のスピーチテキスト
+    const speechTexts = {
+      1: "皆様、こんにちは。行政書士の杉澤です。今回は、特定卸供給事業者、いわゆるアグリゲーターについて調べてみましたので、行政書士業務としての可能性を皆様と一緒に考えてみたいと思います。",
+      2: "きっかけは、阿部先生からいただいた情報でした。衆議院議員の土井とおる先生の政策秘書である佐藤様から、経済産業省所管の特定卸供給事業者の手続きについて打診があったとのことです。私自身も、この制度については今回初めて本格的に調べる機会となりました。そこで、これが行政書士の仕事として成り立つのか、調べてみることにしました。",
+      3: "調べ始めたとき、私の頭の中は疑問だらけでした。アグリゲーターってそもそも何だろう？本当に行政書士の仕事になるのかな？一回だけの届出で終わりなのだろうか？将来性はあるのか？最初は全く分かりませんでしたが、調べていくうちに意外なことが分かってきました。",
+      4: "調べてみると、実は行政書士が活躍できる業務が数多く存在することが分かりました。単純な届出だけでなく、関係者との契約書作成、補助金申請、社内規程の作成、法令順守のためのコンプライアンス体制構築、行政機関との調整など、多岐にわたります。",
+      5: "この業務の素晴らしいところは、最初の届出をして終わりではない点です。事業開始後も、契約更新への対応、法改正への対応、社内規程の見直し、補助金申請、各種届出など、継続的な支援が求められる可能性があります。このように長く伴走できる継続業務が数多く存在します。",
+      6: "では、なぜこの分野が今後伸びるのか。それは、国の政策と密接に関係しているからです。再生可能エネルギーの普及、蓄電池やEVの活用、あるいは災害に強いまちづくり、いわゆる地域レジエンス、さらにはDXの推進など、これからの社会に不可欠なテーマばかりだからです。",
+      7: "では、具体的にどのくらい市場が広がるのかという予測です。国のエネルギー政策や各種調査では、市場の大きな拡大が見込まれており、今後大きく成長することが期待されています。大企業だけでなく、地方自治体や地元のITベンチャー、さらには蓄電池を導入する地元の工場など、身近な中小企業がどんどん関わってきます。つまり、私たちの地域のお客さま自身が、このビジネスの当事者になっていく未来が予測されます。",
+      8: "しかし、ここで私たちが絶対に避けて通れない、非常に重要な心配事があります。それは、直接電気を作る事業者と、地域住民との間の摩擦です。実際には、再生可能エネルギー施設をめぐり、地域との合意形成が十分でないまま計画が進み、トラブルとなる事例も報告されています。もし私たちが、地域との合意形成が十分でない事業の言いなりになって体裁だけの書類を作る裏方になってしまえば、長年築いた地元の信頼は崩れてしまいます。だからこそ、私たちは単なる代書屋になってはならないのです。",
+      9: "では、どうすればその信頼を守れるのか。それこそが、行政書士だからできることです。地域との調和を図るための橋渡し役になり、企業に対して住民説明や地域条例の遵守を徹底させる。そして反社排除条項を組み込んだ契約書を作る。つまり、地域トラブルを未然に防ぎ、地域と制度を正しく動かす専門家としての役割が、今まさに私たちに求められているのです。",
+      10: "ここで、少し私自身の視点もお話しさせてください。私は医療搬送にも携わっていますが、停電時に医療機器を使用する方への電力確保の重要性を日々感じています。その意味でも、蓄電池や分散型エネルギーを活用する仕組みは、防災やBCPの観点からも今後ますます重要になるのではないかと考えています。",
+      11: "さらに視野を広げますと、今後AIの活用が進めば、企業側でも設置場所の検討や書類作成などの効率化が進む可能性があります。私たちも「書類作成」の枠を超え、AIだけでは代替できない価値を示す必要があります。AIに難しく、私たちにできること。それは「地域住民に寄り添い、対面で合意形成を図ること」です。だからこそ、「東北行政事務事業協同組合」が窓口となり、各地の先生方と連携して現場の調整を進める。AIには真似できない「現場の信頼」と「組織力」の掛け合わせが、これからの最大の武器になると考えています。",
+      12: "そして、この「現場の信頼」は一朝一夕に作れるものではありません。地域活動や日々の相談業務を通じて積み重ねた信頼こそが、いざ新しい施設が地域に入る際、「あの先生が間に入ってくれるなら安心だ」と言っていただける最大の基盤になります。私自身は、その活動の一つとして医療搬送や介護タクシーに携わっていますが、こうした地域福祉への貢献と、アグリゲーターのような最新の制度づくりは、実は「地域の信頼」という太い根っこで一つに繋がっているのです。",
+      13: "今回、このテーマを調べて強く感じたのは、行政書士の仕事は今すでにある仕事だけではないということです。リスクから地元の信頼を守り抜き、新しい技術や制度を正しく先導すれば、私たちの活躍の場はさらに広がる可能性があります。その大きな可能性の一つが、このアグリゲーターなのだと確信しました。",
+      14: "最後になりますが、今回このような貴重なテーマをご紹介いただいた阿部先生に、深く感謝申し上げます。私自身まだ勉強中ですが、皆様と一緒に学びながら、新しい行政書士業務の可能性を探っていきたいと思っています。行政書士は、制度ができてから手続きを行うだけではなく、それぞれが地域で積み重ねてきた信頼を基盤に、新しい社会の変化を理解し、地域と制度をつなぐ役割も担えるのではないか――そんな可能性を、このテーマを通して改めて感じました。本日はありがとうございました。"
+    };
+
+    function showSlide(n) {
+      stopSpeech();
+      
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      document.getElementById('slide-' + n).classList.add('active');
+      
+      document.getElementById('prev-btn').disabled = (n === 1);
+      document.getElementById('next-btn').disabled = (n === totalSlides);
+      document.getElementById('slide-num').innerText = n + ' / ' + totalSlides;
+      document.getElementById('progress').style.width = (n / totalSlides * 100) + '%';
+      
+      for (let i = 1; i <= totalSlides; i++) {
+        const btn = document.getElementById('play-btn-' + i);
+        if (btn) {
+          btn.innerHTML = '🔈 スピーチ再生';
+          btn.classList.remove('playing');
+        }
+      }
+      isPlaying = false;
+    }
+
+    function toggleSpeech(slideNum) {
+      const playBtn = document.getElementById('play-btn-' + slideNum);
+      
+      if (isPlaying) {
+        stopSpeech();
+        playBtn.innerHTML = '🔈 スピーチ再生';
+        playBtn.classList.remove('playing');
+        isPlaying = false;
+      } else {
+        synth.cancel();
+        
+        const text = speechTexts[slideNum];
+        utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ja-JP';
+        utterance.rate = 1.05; // テンポを少しだけ良くするための調整
+        
+        utterance.onend = function() {
+          playBtn.innerHTML = '🔈 スピーチ再生';
+          playBtn.classList.remove('playing');
+          isPlaying = false;
+        };
+        
+        playBtn.innerHTML = '⏹ 停止';
+        playBtn.classList.add('playing');
+        isPlaying = true;
+        synth.speak(utterance);
+      }
+    }
+
+    function stopSpeech() {
+      if (synth) {
+        synth.cancel();
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    }
+
+    showSlide(1);
+  </script>
+</body>
+</html>
